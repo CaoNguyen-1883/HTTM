@@ -1,0 +1,14 @@
+.env
+/diagram/
+
+# Ignore all Markdown files
+*.md
+
+# Except README.md (case insensitive)
+!README.md
+!readme.md
+!Readme.md
+!.*
+
+ml-recommendation
+*.sql

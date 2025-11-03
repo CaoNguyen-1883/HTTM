@@ -1,0 +1,28 @@
+# Development Profile Configuration
+# This profile is optimized for development with Spring DevTools
+
+spring:
+  # Use Caffeine (in-memory) cache instead of Redis in development
+  # This prevents serialization issues when Spring DevTools restarts the application
+  cache:
+    type: caffeine
+    cache-names: products,productDetails,categories,users,userProfiles,inventory,orders,cart,searchResults
+
+  # Development-specific configurations
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    dev.CaoNguyen_1883.ecommerce: DEBUG
+    org.springframework.cache: DEBUG
+
+# Note: If you want to test with Redis in development, change:
+# spring.cache.type: redis
+# Then make sure to clear Redis cache after each DevTools restart using:
+# - Admin Dashboard -> Cache Management -> Clear All Caches
+# - Or use Redis CLI: redis-cli FLUSHDB

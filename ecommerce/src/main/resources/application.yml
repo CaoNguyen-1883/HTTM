@@ -1,0 +1,71 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+app:
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    access-token-expiration: 900000  # 15 minutes in milliseconds
+    refresh-token-expiration: 604800000 # 7 days in milliseconds
+  seed:
+    enabled: true        # Enable/disable seeding
+    force-reseed: false  # Force reseed even if already seeded
+    test-users: true  # Set false in production
+spring:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    disable-swagger-default-url: true
+  show-actuator: false
+  profiles:
+    active: dev
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 3000
+  application:
+    name: Ecommerce
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/ecommerce_db}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:default}
+            client-secret: ${GOOGLE_CLIENT_SECRET:default}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+#logging:
+#  level:
+#    dev.CaoNguyen_1883.ecommerce.common.security: DEBUG
+
