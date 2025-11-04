@@ -1,0 +1,16 @@
+[
+  {
+    "timestamp": "2025-11-05T04:00:41.101203",
+    "trained_at": "2025-11-05T02:38:55.962590",
+    "n_users": 102,
+    "n_products": 33,
+    "n_interactions": 3331,
+    "sparsity": 0.010398098633392805,
+    "min_co_occurrence": 5,
+    "use_hybrid": true,
+    "purchase_weight": 1.0,
+    "view_weight": 0.3,
+    "similarity_density": 1.0303030303030303,
+    "avg_similarity": 0.7654028249693878
+  }
+]
