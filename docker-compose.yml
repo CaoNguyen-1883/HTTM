@@ -1,0 +1,214 @@
+version: '3.8'
+
+services:
+  # ================================
+  # MySQL Database
+  # ================================
+  mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-ecommerce_db}
+      MYSQL_USER: ${DB_USERNAME:-ecommerce}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ================================
+  # Redis Cache
+  # ================================
+  redis:
+    image: redis:7.2-alpine
+    container_name: ecommerce-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ================================
+  # Spring Boot Backend
+  # ================================
+  backend:
+    build:
+      context: ./ecommerce
+      dockerfile: Dockerfile
+    container_name: ecommerce-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring Profile
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-prod}
+
+      # Database Configuration
+      DB_URL: jdbc:mysql://mysql:3306/${DB_NAME:-ecommerce_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USERNAME: ${DB_USERNAME:-ecommerce}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+
+      # Redis Configuration
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-this-in-production-min-256-bits}
+
+      # OAuth2 (Optional)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+
+      # Application Configuration
+      APP_SEED_ENABLED: ${SEED_ENABLED:-true}
+      APP_SEED_FORCE_RESEED: ${FORCE_RESEED:-false}
+      APP_SEED_TEST_USERS: ${TEST_USERS:-false}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ================================
+  # ML Recommendation Service
+  # ================================
+  ml-service:
+    build:
+      context: ./ml-recommendation
+      dockerfile: Dockerfile
+    container_name: ecommerce-ml
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      # Database Configuration (for training)
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-ecommerce_db}
+      DB_USER: ${DB_USERNAME:-ecommerce}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+
+      # Python Configuration
+      PYTHONUNBUFFERED: 1
+    volumes:
+      # Mount models directory for persistence
+      - ml_models:/app/models
+      # Mount logs directory
+      - ml_logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ================================
+  # React Frontend (Nginx)
+  # ================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Build-time environment variables
+        VITE_API_URL: /api
+        VITE_ML_API_URL: http://localhost:8000
+    container_name: ecommerce-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - ml-service
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ================================
+  # ML Training Scheduler (Optional)
+  # ================================
+  ml-scheduler:
+    build:
+      context: ./ml-recommendation
+      dockerfile: Dockerfile
+    container_name: ecommerce-ml-scheduler
+    restart: unless-stopped
+    command: ["python", "src/scheduler.py", "--schedule", "daily"]
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-ecommerce_db}
+      DB_USER: ${DB_USERNAME:-ecommerce}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ml_models:/app/models
+      - ml_logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ml-service:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
+    profiles:
+      - scheduler  # Only start with: docker-compose --profile scheduler up
+
+# ================================
+# Networks
+# ================================
+networks:
+  ecommerce-network:
+    driver: bridge
+
+# ================================
+# Volumes
+# ================================
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  ml_models:
+    driver: local
+  ml_logs:
+    driver: local

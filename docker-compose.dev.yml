@@ -1,0 +1,150 @@
+version: '3.8'
+
+# ================================
+# Development Docker Compose
+# ================================
+# Usage: docker-compose -f docker-compose.dev.yml up
+# Features:
+# - Hot reload for frontend (Vite dev server)
+# - Source code mounted as volumes
+# - Exposed ports for debugging
+# - Development tools enabled
+
+services:
+  # MySQL - Same as production
+  mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ecommerce_db
+      MYSQL_USER: ecommerce
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    networks:
+      - ecommerce-dev-network
+
+  # Redis - Same as production
+  redis:
+    image: redis:7.2-alpine
+    container_name: ecommerce-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - ecommerce-dev-network
+
+  # Spring Boot Backend - With source code mount
+  backend:
+    build:
+      context: ./ecommerce
+      dockerfile: Dockerfile
+      target: builder  # Stop at build stage for development
+    container_name: ecommerce-backend-dev
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "5005:5005"  # Java Debug Port
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:mysql://mysql:3306/ecommerce_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      DB_USERNAME: ecommerce
+      DB_PASSWORD: root
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      JWT_SECRET: dev-secret-key-not-for-production
+      APP_SEED_ENABLED: true
+      APP_SEED_TEST_USERS: true
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    volumes:
+      # Mount source code for hot reload
+      - ./ecommerce/src:/app/src:ro
+      - ./ecommerce/target:/app/target
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - ecommerce-dev-network
+
+  # ML Service - With source code mount
+  ml-service:
+    build:
+      context: ./ml-recommendation
+      dockerfile: Dockerfile
+    container_name: ecommerce-ml-dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ecommerce_db
+      DB_USER: ecommerce
+      DB_PASSWORD: root
+      PYTHONUNBUFFERED: 1
+    volumes:
+      # Mount source code for hot reload
+      - ./ml-recommendation/src:/app/src
+      - ./ml-recommendation/models:/app/models
+      - ./ml-recommendation/logs:/app/logs
+    depends_on:
+      - mysql
+      - backend
+    networks:
+      - ecommerce-dev-network
+    # Override command to use auto-reload
+    command: ["uvicorn", "src.api:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Frontend - Vite Dev Server
+  frontend-dev:
+    image: node:20-alpine
+    container_name: ecommerce-frontend-dev
+    working_dir: /app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: /api
+      VITE_ML_API_URL: http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Use container's node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 3000"
+    depends_on:
+      - backend
+      - ml-service
+    networks:
+      - ecommerce-dev-network
+
+  # Nginx Proxy (for development - routes /api to backend)
+  nginx-proxy:
+    image: nginx:1.25-alpine
+    container_name: ecommerce-nginx-dev
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./scripts/nginx-dev.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - ml-service
+      - frontend-dev
+    networks:
+      - ecommerce-dev-network
+
+networks:
+  ecommerce-dev-network:
+    driver: bridge
+
+volumes:
+  mysql_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
