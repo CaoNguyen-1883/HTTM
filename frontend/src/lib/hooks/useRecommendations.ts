@@ -111,14 +111,14 @@ export const useRecommendationsForYou = (limit: number = 8) => {
 // These hooks use the ML API (Item-Based Collaborative Filtering)
 
 import {
-  getUserRecommendations,
   getSimilarProducts as getMLSimilarProducts,
   RecommendationsResponse,
 } from "../api/recommendations.api";
 
 /**
  * ML-Based: Get personalized recommendations using collaborative filtering
- * Combines purchase history + view history for better accuracy
+ * NOTE: This returns only product IDs. Use usePersonalizedProducts for full details.
+ * @deprecated Use usePersonalizedProducts instead for automatic enrichment
  */
 export const useMLRecommendationsForYou = (
   userId: string | undefined,
@@ -126,8 +126,12 @@ export const useMLRecommendationsForYou = (
 ) => {
   return useQuery<RecommendationsResponse>({
     queryKey: ["ml-recommendations", "user", userId, limit],
-    queryFn: () => getUserRecommendations(userId!, limit, true),
-    enabled: !!userId,
+    queryFn: async () => {
+      // This hook is kept for backward compatibility but needs purchase history
+      // For new code, use usePersonalizedProducts instead
+      return { recommendations: [], total: 0 };
+    },
+    enabled: false, // Disabled - use usePersonalizedProducts instead
     staleTime: 5 * 60 * 1000,
     retry: 1,
   });
@@ -147,5 +151,92 @@ export const useMLSimilarProducts = (
     enabled: !!productId,
     staleTime: 10 * 60 * 1000,
     retry: 1,
+  });
+};
+
+// ==================== ENRICHED ML RECOMMENDATIONS ====================
+// These hooks return full product details (enriched with Spring Boot data)
+
+import { enrichedRecommendationsApi } from "../api/recommendations.helper";
+import { useAuthStore } from "../stores/authStore";
+import { ordersApi } from "../api/orders.api";
+
+/**
+ * Get personalized recommendations với FULL product details
+ * Automatically fetches purchase history and enriches with product data
+ * Use case: Homepage "Dành Cho Bạn" section
+ */
+export const usePersonalizedProducts = (limit: number = 20) => {
+  const { user } = useAuthStore();
+
+  return useQuery({
+    queryKey: ['personalizedProducts', user?.id, limit],
+    queryFn: async () => {
+      if (!user) {
+        // Guest user → show popular products
+        return enrichedRecommendationsApi.getPopularProductsWithDetails(limit);
+      }
+
+      try {
+        // Get purchase history (customer gets their own orders by default)
+        const ordersResponse = await ordersApi.getOrders();
+        const productIds = new Set<string>();
+
+        ordersResponse.content.forEach((order: any) => {
+          order.items?.forEach((item: any) => {
+            if (item.productId) {
+              productIds.add(item.productId);
+            }
+          });
+        });
+
+        const purchaseHistory = Array.from(productIds);
+
+        if (purchaseHistory.length === 0) {
+          // New user → show popular products
+          return enrichedRecommendationsApi.getPopularProductsWithDetails(limit);
+        }
+
+        // Get AI recommendations với full details
+        return enrichedRecommendationsApi.getPersonalizedProducts(
+          user.id,
+          purchaseHistory,
+          limit
+        );
+      } catch (error) {
+        console.error('Error in usePersonalizedProducts:', error);
+        return enrichedRecommendationsApi.getPopularProductsWithDetails(limit);
+      }
+    },
+    enabled: true,
+    staleTime: 5 * 60 * 1000, // Cache 5 minutes
+    retry: 1,
+  });
+};
+
+/**
+ * Get similar products với FULL product details
+ * Use case: Product Detail Page "Khách Hàng Cũng Mua"
+ */
+export const useSimilarProductsEnriched = (productId: string, limit: number = 10) => {
+  return useQuery({
+    queryKey: ['similarProductsEnriched', productId, limit],
+    queryFn: () => enrichedRecommendationsApi.getSimilarProductsWithDetails(productId, limit),
+    enabled: !!productId,
+    staleTime: 10 * 60 * 1000, // Cache 10 minutes
+    retry: 1,
+  });
+};
+
+/**
+ * Get popular products với FULL product details
+ * Use case: Homepage "Best Sellers", Guest Users
+ */
+export const usePopularProductsEnriched = (limit: number = 20) => {
+  return useQuery({
+    queryKey: ['popularProductsEnriched', limit],
+    queryFn: () => enrichedRecommendationsApi.getPopularProductsWithDetails(limit),
+    staleTime: 30 * 60 * 1000, // Cache 30 minutes
+    retry: 2,
   });
 };

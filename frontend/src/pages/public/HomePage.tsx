@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ShoppingBag, TrendingUp, Star, Clock } from "lucide-react";
 import { useHomePageRecommendations } from "../../lib/hooks";
 import { ProductRecommendationSection } from "../../components/shared/ProductRecommendationSection";
-import { MLRecommendedProducts } from "../../components/customer/MLRecommendedProducts";
+import { AIRecommendedProducts } from "../../components/customer/AIRecommendedProducts";
 import { useAuthStore } from "../../lib/stores/authStore";
 
 export const HomePage = () => {
@@ -82,6 +82,29 @@ export const HomePage = () => {
         </div>
       </section>
 
+      {/* AI-Powered Personalized Recommendations */}
+      <div className="py-8 bg-gradient-to-br from-purple-50 to-blue-50">
+        <div className="container mx-auto px-4">
+          {user ? (
+            <AIRecommendedProducts
+              type="personalized"
+              limit={10}
+              title="Dành Cho Bạn"
+              description="Gợi ý cá nhân hóa bằng AI - dựa trên lịch sử mua hàng của bạn"
+              showAIBadge={true}
+            />
+          ) : (
+            <AIRecommendedProducts
+              type="popular"
+              limit={10}
+              title="Sản Phẩm Phổ Biến"
+              description="Những sản phẩm được yêu thích nhất"
+              showAIBadge={true}
+            />
+          )}
+        </div>
+      </div>
+
       {/* Loading State */}
       {isLoading && (
         <div className="py-20">
@@ -109,21 +132,6 @@ export const HomePage = () => {
               />
             </div>
           ))}
-        </div>
-      )}
-
-      {/* AI-Powered Personalized Recommendations (for logged-in users) */}
-      {user && (
-        <div className="py-8 bg-gradient-to-br from-purple-50 to-blue-50">
-          <div className="container mx-auto px-4">
-            <MLRecommendedProducts
-              userId={user.id}
-              type="user"
-              limit={10}
-              title="Recommended For You"
-              description="Personalized recommendations powered by AI - based on your browsing and purchase history"
-            />
-          </div>
         </div>
       )}
 

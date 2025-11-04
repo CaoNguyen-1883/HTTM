@@ -147,7 +147,7 @@ export const MLRecommendedProducts = ({
               <div className="aspect-square relative overflow-hidden bg-gray-100">
                 {product.images && product.images.length > 0 ? (
                   <img
-                    src={product.images[0].url}
+                    src={product.images[0].imageUrl}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />

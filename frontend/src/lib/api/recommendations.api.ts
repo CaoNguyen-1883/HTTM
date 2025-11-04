@@ -15,26 +15,34 @@ export interface RecommendationsResponse {
 
 /**
  * Get personalized recommendations for a user
- * Combines purchase history + view history for better recommendations
+ * @param userId - User UUID
+ * @param purchasedProducts - Array of product UUIDs user has purchased
+ * @param limit - Number of recommendations (default: 20)
  */
 export const getUserRecommendations = async (
   userId: string,
-  limit: number = 20,
-  useViews: boolean = true
+  purchasedProducts: string[],
+  limit: number = 20
 ): Promise<RecommendationsResponse> => {
   try {
+    // Convert array to comma-separated string
+    const productsParam = purchasedProducts.join(',');
+
     const response = await axios.get<RecommendationsResponse>(
       `${ML_API_URL}/api/recommendations/user/${userId}`,
       {
-        params: { limit, use_views: useViews },
-        timeout: 15000, // Increased to 15 seconds
+        params: {
+          purchased_products: productsParam,
+          limit
+        },
+        timeout: 15000,
       }
     );
     return response.data;
   } catch (error) {
     console.error('Error fetching user recommendations:', error);
-    // Return empty recommendations on error
-    return { recommendations: [], total: 0 };
+    // Fallback to popular products on error
+    return getPopularProducts(limit);
   }
 };
 
