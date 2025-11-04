@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Endpoints Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #34495e;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .method-get {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .method-post {
+            color: #2980b9;
+            font-weight: bold;
+        }
+        .method-put {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .method-delete {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .method-patch {
+            color: #8e44ad;
+            font-weight: bold;
+        }
+        .module-cell {
+            background-color: #ecf0f1;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Endpoints Documentation</h1>
+    <p>Tài liệu API của hệ thống E-Commerce Platform</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 15%;">Module</th>
+                <th style="width: 7%;">Method</th>
+                <th style="width: 25%;">Endpoint</th>
+                <th style="width: 15%;">Description</th>
+                <th style="width: 13%;">Request Body</th>
+                <th style="width: 13%;">Response Type</th>
+                <th style="width: 6%;">Auth</th>
+                <th style="width: 10%;">Roles</th>
+                <th style="width: 16%;">Query Parameters</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="module-cell">Authentication</td>
+                <td class="method-post">POST</td>
+                <td>/api/auth/login</td>
+                <td>Đăng nhập</td>
+                <td>LoginRequest (email password expectedRole)</td>
+                <td>AuthResponse</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Authentication</td>
+                <td class="method-post">POST</td>
+                <td>/api/auth/register</td>
+                <td>Đăng ký tài khoản</td>
+                <td>RegisterRequest (email password fullName phone)</td>
+                <td>AuthResponse</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Authentication</td>
+                <td class="method-post">POST</td>
+                <td>/api/auth/refresh-token</td>
+                <td>Làm mới access token</td>
+                <td>RefreshTokenRequest (refreshToken)</td>
+                <td>AuthResponse</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Authentication</td>
+                <td class="method-get">GET</td>
+                <td>/api/auth/me</td>
+                <td>Lấy thông tin user hiện tại</td>
+                <td>-</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>All</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/users</td>
+                <td>Lấy danh sách users</td>
+                <td>-</td>
+                <td>Page&lt;UserDTO&gt;</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>page, size, sort</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/users/search</td>
+                <td>Tìm kiếm users</td>
+                <td>-</td>
+                <td>Page&lt;UserDTO&gt;</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>keyword, page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/users/role/{roleName}</td>
+                <td>Lấy users theo role</td>
+                <td>-</td>
+                <td>Page&lt;UserDTO&gt;</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/users/{id}</td>
+                <td>Lấy user by ID</td>
+                <td>-</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>ADMIN, STAFF</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/users</td>
+                <td>Tạo user mới</td>
+                <td>UserRequest</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-put">PUT</td>
+                <td>/api/users/{id}</td>
+                <td>Cập nhật user</td>
+                <td>UserUpdateRequest</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/users/{id}/roles</td>
+                <td>Gán roles cho user</td>
+                <td>List&lt;String&gt; roleNames</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/users/{id}/roles</td>
+                <td>Xóa roles của user</td>
+                <td>List&lt;String&gt; roleNames</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/users/{id}/change-password</td>
+                <td>Đổi mật khẩu</td>
+                <td>PasswordChangeRequest</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN, Owner</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/users/{id}/verify-email</td>
+                <td>Verify email</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/users/{id}</td>
+                <td>Soft delete user</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">User Management</td>
+                <td class="method-patch">PATCH</td>
+                <td>/api/users/{id}/restore</td>
+                <td>Restore user đã xóa</td>
+                <td>-</td>
+                <td>UserDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/roles</td>
+                <td>Lấy tất cả roles</td>
+                <td>-</td>
+                <td>List&lt;RoleDTO&gt;</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/roles/{id}</td>
+                <td>Lấy role by ID</td>
+                <td>-</td>
+                <td>RoleDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/roles</td>
+                <td>Tạo role mới</td>
+                <td>RoleRequest</td>
+                <td>RoleDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-put">PUT</td>
+                <td>/api/roles/{id}</td>
+                <td>Cập nhật role</td>
+                <td>RoleRequest</td>
+                <td>RoleDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/roles/{id}/permissions</td>
+                <td>Gán permissions cho role</td>
+                <td>List&lt;UUID&gt; permissionIds</td>
+                <td>RoleDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/roles/{id}/permissions</td>
+                <td>Xóa permissions của role</td>
+                <td>List&lt;UUID&gt; permissionIds</td>
+                <td>RoleDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Role Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/roles/{id}</td>
+                <td>Xóa role</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Permission Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/permissions</td>
+                <td>Lấy tất cả permissions</td>
+                <td>-</td>
+                <td>List&lt;PermissionDTO&gt;</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Permission Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/permissions/{id}</td>
+                <td>Lấy permission by ID</td>
+                <td>-</td>
+                <td>PermissionDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Permission Management</td>
+                <td class="method-post">POST</td>
+                <td>/api/permissions</td>
+                <td>Tạo permission mới</td>
+                <td>PermissionRequest</td>
+                <td>PermissionDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Permission Management</td>
+                <td class="method-put">PUT</td>
+                <td>/api/permissions/{id}</td>
+                <td>Cập nhật permission</td>
+                <td>PermissionRequest</td>
+                <td>PermissionDTO</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Permission Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/permissions/{id}</td>
+                <td>Xóa permission</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products</td>
+                <td>Lấy tất cả products</td>
+                <td>-</td>
+                <td>Page&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size, sort, keyword, categoryId, brandId, minPrice, maxPrice</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/{id}</td>
+                <td>Chi tiết product by ID</td>
+                <td>-</td>
+                <td>ProductDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/slug/{slug}</td>
+                <td>Chi tiết product by slug</td>
+                <td>-</td>
+                <td>ProductDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/search</td>
+                <td>Tìm kiếm products</td>
+                <td>-</td>
+                <td>Page&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>keyword, page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/category/{categoryId}</td>
+                <td>Products theo category</td>
+                <td>-</td>
+                <td>Page&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/brand/{brandId}</td>
+                <td>Products theo brand</td>
+                <td>-</td>
+                <td>Page&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/trending</td>
+                <td>Sản phẩm trending</td>
+                <td>-</td>
+                <td>List&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/best-sellers</td>
+                <td>Sản phẩm bán chạy</td>
+                <td>-</td>
+                <td>List&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/top-rated</td>
+                <td>Sản phẩm rating cao</td>
+                <td>-</td>
+                <td>List&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/{id}/similar</td>
+                <td>Sản phẩm tương tự</td>
+                <td>-</td>
+                <td>List&lt;ProductSummaryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Seller)</td>
+                <td class="method-post">POST</td>
+                <td>/api/products</td>
+                <td>Tạo product mới</td>
+                <td>ProductRequest</td>
+                <td>ProductDto</td>
+                <td>Yes</td>
+                <td>SELLER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Seller)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/my-products</td>
+                <td>Lấy products của seller</td>
+                <td>-</td>
+                <td>Page&lt;ProductDto&gt;</td>
+                <td>Yes</td>
+                <td>SELLER</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Seller)</td>
+                <td class="method-put">PUT</td>
+                <td>/api/products/{id}</td>
+                <td>Cập nhật product</td>
+                <td>ProductUpdateRequest</td>
+                <td>ProductDto</td>
+                <td>Yes</td>
+                <td>SELLER (owner)</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Seller)</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/products/{id}</td>
+                <td>Xóa product</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>SELLER (owner)</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/pending</td>
+                <td>Products chờ duyệt</td>
+                <td>-</td>
+                <td>Page&lt;ProductDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/admin/all</td>
+                <td>Tất cả products (admin)</td>
+                <td>-</td>
+                <td>Page&lt;ProductDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/products/status/{status}</td>
+                <td>Products theo status</td>
+                <td>-</td>
+                <td>Page&lt;ProductDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/products/{id}/approve</td>
+                <td>Duyệt product</td>
+                <td>ProductApprovalRequest</td>
+                <td>ProductDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Product (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/products/{id}/reject</td>
+                <td>Từ chối product</td>
+                <td>ProductApprovalRequest</td>
+                <td>ProductDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-get">GET</td>
+                <td>/api/categories</td>
+                <td>Lấy tất cả categories</td>
+                <td>-</td>
+                <td>List&lt;CategoryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-get">GET</td>
+                <td>/api/categories/root</td>
+                <td>Root categories with children</td>
+                <td>-</td>
+                <td>List&lt;CategoryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-get">GET</td>
+                <td>/api/categories/{id}</td>
+                <td>Category by ID</td>
+                <td>-</td>
+                <td>CategoryDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-get">GET</td>
+                <td>/api/categories/slug/{slug}</td>
+                <td>Category by slug</td>
+                <td>-</td>
+                <td>CategoryDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-get">GET</td>
+                <td>/api/categories/{id}/children</td>
+                <td>Sub-categories</td>
+                <td>-</td>
+                <td>List&lt;CategoryDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-post">POST</td>
+                <td>/api/categories</td>
+                <td>Tạo category</td>
+                <td>CategoryRequest</td>
+                <td>CategoryDto</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-put">PUT</td>
+                <td>/api/categories/{id}</td>
+                <td>Cập nhật category</td>
+                <td>CategoryRequest</td>
+                <td>CategoryDto</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/categories/{id}</td>
+                <td>Xóa category</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Category</td>
+                <td class="method-patch">PATCH</td>
+                <td>/api/categories/{id}/restore</td>
+                <td>Restore category</td>
+                <td>-</td>
+                <td>CategoryDto</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-get">GET</td>
+                <td>/api/brands</td>
+                <td>Lấy tất cả brands</td>
+                <td>-</td>
+                <td>List&lt;BrandDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-get">GET</td>
+                <td>/api/brands/{id}</td>
+                <td>Brand by ID</td>
+                <td>-</td>
+                <td>BrandDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-get">GET</td>
+                <td>/api/brands/slug/{slug}</td>
+                <td>Brand by slug</td>
+                <td>-</td>
+                <td>BrandDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-post">POST</td>
+                <td>/api/brands</td>
+                <td>Tạo brand</td>
+                <td>BrandRequest</td>
+                <td>BrandDto</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-put">PUT</td>
+                <td>/api/brands/{id}</td>
+                <td>Cập nhật brand</td>
+                <td>BrandRequest</td>
+                <td>BrandDto</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/brands/{id}</td>
+                <td>Xóa brand</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Brand</td>
+                <td class="method-patch">PATCH</td>
+                <td>/api/brands/{id}/restore</td>
+                <td>Restore brand</td>
+                <td>-</td>
+                <td>BrandDto</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-get">GET</td>
+                <td>/api/cart</td>
+                <td>Lấy giỏ hàng hiện tại</td>
+                <td>-</td>
+                <td>CartDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-post">POST</td>
+                <td>/api/cart/items</td>
+                <td>Thêm item vào giỏ</td>
+                <td>AddToCartRequest</td>
+                <td>CartDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-put">PUT</td>
+                <td>/api/cart/items/{itemId}</td>
+                <td>Cập nhật quantity</td>
+                <td>UpdateCartItemRequest</td>
+                <td>CartDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/cart/items/{itemId}</td>
+                <td>Xóa item khỏi giỏ</td>
+                <td>-</td>
+                <td>CartDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/cart</td>
+                <td>Xóa toàn bộ giỏ hàng</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-post">POST</td>
+                <td>/api/cart/sync</td>
+                <td>Sync cart data</td>
+                <td>List&lt;CartItemDto&gt;</td>
+                <td>CartDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cart</td>
+                <td class="method-get">GET</td>
+                <td>/api/cart/count</td>
+                <td>Đếm số item trong giỏ</td>
+                <td>-</td>
+                <td>Integer</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Customer)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders</td>
+                <td>Tạo order từ cart</td>
+                <td>CreateOrderRequest</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Customer)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/my-orders</td>
+                <td>Lấy orders của mình</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Customer)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/{orderId}</td>
+                <td>Chi tiết order</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Customer)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/number/{orderNumber}</td>
+                <td>Order by order number</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Customer)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/cancel</td>
+                <td>Hủy order</td>
+                <td>CancelOrderRequest</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders</td>
+                <td>Tất cả orders</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size, sort</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/status/{status}</td>
+                <td>Orders theo status</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/payment-status/{status}</td>
+                <td>Orders theo payment status</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/pending</td>
+                <td>Pending orders</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/search</td>
+                <td>Tìm kiếm orders</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>keyword, page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/date-range</td>
+                <td>Orders trong khoảng thời gian</td>
+                <td>-</td>
+                <td>Page&lt;OrderDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>startDate, endDate, page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/confirm</td>
+                <td>Xác nhận order</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/processing</td>
+                <td>Đánh dấu đang xử lý</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/ship</td>
+                <td>Đánh dấu đã ship</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/deliver</td>
+                <td>Đánh dấu đã giao</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-put">PUT</td>
+                <td>/api/orders/{orderId}/status</td>
+                <td>Cập nhật status</td>
+                <td>UpdateOrderStatusRequest</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/payment/paid</td>
+                <td>Đánh dấu đã thanh toán</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/orders/{orderId}/payment/failed</td>
+                <td>Đánh dấu thanh toán thất bại</td>
+                <td>-</td>
+                <td>OrderDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Statistics)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/statistics</td>
+                <td>Thống kê orders</td>
+                <td>-</td>
+                <td>OrderStatistics</td>
+                <td>Yes</td>
+                <td>ADMIN, STAFF</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Statistics)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/revenue/total</td>
+                <td>Tổng doanh thu</td>
+                <td>-</td>
+                <td>BigDecimal</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Order (Statistics)</td>
+                <td class="method-get">GET</td>
+                <td>/api/orders/revenue/date-range</td>
+                <td>Doanh thu theo thời gian</td>
+                <td>-</td>
+                <td>BigDecimal</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>startDate, endDate</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/product/{productId}</td>
+                <td>Reviews của product</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/product/{productId}/rating/{rating}</td>
+                <td>Filter by rating</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/product/{productId}/verified</td>
+                <td>Verified purchase reviews</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/product/{productId}/helpful</td>
+                <td>Most helpful reviews</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/product/{productId}/summary</td>
+                <td>Rating summary</td>
+                <td>-</td>
+                <td>ProductRatingSummary</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Public)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/{reviewId}</td>
+                <td>Review details</td>
+                <td>-</td>
+                <td>ReviewDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Customer)</td>
+                <td class="method-post">POST</td>
+                <td>/api/reviews</td>
+                <td>Tạo review</td>
+                <td>CreateReviewRequest</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Customer)</td>
+                <td class="method-put">PUT</td>
+                <td>/api/reviews/{reviewId}</td>
+                <td>Cập nhật review</td>
+                <td>UpdateReviewRequest</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER (owner)</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Customer)</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/reviews/{reviewId}</td>
+                <td>Xóa review</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>CUSTOMER (owner)</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Customer)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/my-reviews</td>
+                <td>Reviews của mình</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Customer)</td>
+                <td class="method-post">POST</td>
+                <td>/api/reviews/{reviewId}/vote</td>
+                <td>Vote helpful/not helpful</td>
+                <td>isHelpful (boolean)</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Customer)</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/reviews/{reviewId}/vote</td>
+                <td>Xóa vote</td>
+                <td>-</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>CUSTOMER</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/status/{status}</td>
+                <td>Reviews theo status</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Admin/Staff)</td>
+                <td class="method-get">GET</td>
+                <td>/api/reviews/pending</td>
+                <td>Pending reviews</td>
+                <td>-</td>
+                <td>Page&lt;ReviewDto&gt;</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>page, size</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/reviews/{reviewId}/approve</td>
+                <td>Duyệt review</td>
+                <td>-</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/reviews/{reviewId}/reject</td>
+                <td>Từ chối review</td>
+                <td>RejectReviewRequest</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Review (Admin/Staff)</td>
+                <td class="method-post">POST</td>
+                <td>/api/reviews/{reviewId}/reply</td>
+                <td>Reply review</td>
+                <td>ReplyReviewRequest</td>
+                <td>ReviewDto</td>
+                <td>Yes</td>
+                <td>SELLER, STAFF, ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/homepage</td>
+                <td>Homepage recommendations</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/trending</td>
+                <td>Trending products</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/best-sellers</td>
+                <td>Best sellers</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/top-rated</td>
+                <td>Top rated</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/new-arrivals</td>
+                <td>New arrivals</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/similar/{productId}</td>
+                <td>Similar products</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/bought-together/{productId}</td>
+                <td>Frequently bought together</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>No</td>
+                <td>Public</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Recommendation</td>
+                <td class="method-get">GET</td>
+                <td>/api/recommendations/for-you</td>
+                <td>Personalized recommendations</td>
+                <td>-</td>
+                <td>RecommendationDto</td>
+                <td>Optional</td>
+                <td>CUSTOMER</td>
+                <td>limit</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cache Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/cache/clear</td>
+                <td>Clear all caches</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cache Management</td>
+                <td class="method-delete">DELETE</td>
+                <td>/api/cache/clear/{cacheName}</td>
+                <td>Clear specific cache</td>
+                <td>-</td>
+                <td>String</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+            <tr>
+                <td class="module-cell">Cache Management</td>
+                <td class="method-get">GET</td>
+                <td>/api/cache/stats</td>
+                <td>Cache statistics</td>
+                <td>-</td>
+                <td>Map&lt;String Object&gt;</td>
+                <td>Yes</td>
+                <td>ADMIN</td>
+                <td>-</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-top: 30px; color: #666;">
+        Tổng số: 120 endpoints | Được tạo tự động từ hệ thống
+    </p>
+</body>
+</html>

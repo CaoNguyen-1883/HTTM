@@ -1,0 +1,120 @@
+Module,Method,Endpoint,Description,Request Body,Response Type,Auth Required,Roles,Query Parameters
+Authentication,POST,/api/auth/login,Đăng nhập,LoginRequest (email password expectedRole),AuthResponse,No,Public,-
+Authentication,POST,/api/auth/register,Đăng ký tài khoản,RegisterRequest (email password fullName phone),AuthResponse,No,Public,-
+Authentication,POST,/api/auth/refresh-token,Làm mới access token,RefreshTokenRequest (refreshToken),AuthResponse,No,Public,-
+Authentication,GET,/api/auth/me,Lấy thông tin user hiện tại,-,UserDTO,Yes,All,-
+User Management,GET,/api/users,Lấy danh sách users,-,Page<UserDTO>,Yes,ADMIN,"page, size, sort"
+User Management,GET,/api/users/search,Tìm kiếm users,-,Page<UserDTO>,Yes,ADMIN,"keyword, page, size"
+User Management,GET,/api/users/role/{roleName},Lấy users theo role,-,Page<UserDTO>,Yes,ADMIN,"page, size"
+User Management,GET,/api/users/{id},Lấy user by ID,-,UserDTO,Yes,"ADMIN, STAFF",-
+User Management,POST,/api/users,Tạo user mới,UserRequest,UserDTO,Yes,ADMIN,-
+User Management,PUT,/api/users/{id},Cập nhật user,UserUpdateRequest,UserDTO,Yes,ADMIN,-
+User Management,POST,/api/users/{id}/roles,Gán roles cho user,List<String> roleNames,UserDTO,Yes,ADMIN,-
+User Management,DELETE,/api/users/{id}/roles,Xóa roles của user,List<String> roleNames,UserDTO,Yes,ADMIN,-
+User Management,POST,/api/users/{id}/change-password,Đổi mật khẩu,PasswordChangeRequest,String,Yes,"ADMIN, Owner",-
+User Management,POST,/api/users/{id}/verify-email,Verify email,-,String,Yes,ADMIN,-
+User Management,DELETE,/api/users/{id},Soft delete user,-,String,Yes,ADMIN,-
+User Management,PATCH,/api/users/{id}/restore,Restore user đã xóa,-,UserDTO,Yes,ADMIN,-
+Role Management,GET,/api/roles,Lấy tất cả roles,-,List<RoleDTO>,Yes,ADMIN,-
+Role Management,GET,/api/roles/{id},Lấy role by ID,-,RoleDTO,Yes,ADMIN,-
+Role Management,POST,/api/roles,Tạo role mới,RoleRequest,RoleDTO,Yes,ADMIN,-
+Role Management,PUT,/api/roles/{id},Cập nhật role,RoleRequest,RoleDTO,Yes,ADMIN,-
+Role Management,POST,/api/roles/{id}/permissions,Gán permissions cho role,List<UUID> permissionIds,RoleDTO,Yes,ADMIN,-
+Role Management,DELETE,/api/roles/{id}/permissions,Xóa permissions của role,List<UUID> permissionIds,RoleDTO,Yes,ADMIN,-
+Role Management,DELETE,/api/roles/{id},Xóa role,-,String,Yes,ADMIN,-
+Permission Management,GET,/api/permissions,Lấy tất cả permissions,-,List<PermissionDTO>,Yes,ADMIN,-
+Permission Management,GET,/api/permissions/{id},Lấy permission by ID,-,PermissionDTO,Yes,ADMIN,-
+Permission Management,POST,/api/permissions,Tạo permission mới,PermissionRequest,PermissionDTO,Yes,ADMIN,-
+Permission Management,PUT,/api/permissions/{id},Cập nhật permission,PermissionRequest,PermissionDTO,Yes,ADMIN,-
+Permission Management,DELETE,/api/permissions/{id},Xóa permission,-,String,Yes,ADMIN,-
+Product (Public),GET,/api/products,Lấy tất cả products,-,Page<ProductSummaryDto>,No,Public,"page, size, sort, keyword, categoryId, brandId, minPrice, maxPrice"
+Product (Public),GET,/api/products/{id},Chi tiết product by ID,-,ProductDto,No,Public,-
+Product (Public),GET,/api/products/slug/{slug},Chi tiết product by slug,-,ProductDto,No,Public,-
+Product (Public),GET,/api/products/search,Tìm kiếm products,-,Page<ProductSummaryDto>,No,Public,"keyword, page, size"
+Product (Public),GET,/api/products/category/{categoryId},Products theo category,-,Page<ProductSummaryDto>,No,Public,"page, size"
+Product (Public),GET,/api/products/brand/{brandId},Products theo brand,-,Page<ProductSummaryDto>,No,Public,"page, size"
+Product (Public),GET,/api/products/trending,Sản phẩm trending,-,List<ProductSummaryDto>,No,Public,limit
+Product (Public),GET,/api/products/best-sellers,Sản phẩm bán chạy,-,List<ProductSummaryDto>,No,Public,limit
+Product (Public),GET,/api/products/top-rated,Sản phẩm rating cao,-,List<ProductSummaryDto>,No,Public,limit
+Product (Public),GET,/api/products/{id}/similar,Sản phẩm tương tự,-,List<ProductSummaryDto>,No,Public,limit
+Product (Seller),POST,/api/products,Tạo product mới,ProductRequest,ProductDto,Yes,SELLER,-
+Product (Seller),GET,/api/products/my-products,Lấy products của seller,-,Page<ProductDto>,Yes,SELLER,"page, size"
+Product (Seller),PUT,/api/products/{id},Cập nhật product,ProductUpdateRequest,ProductDto,Yes,SELLER (owner),-
+Product (Seller),DELETE,/api/products/{id},Xóa product,-,String,Yes,SELLER (owner),-
+Product (Admin/Staff),GET,/api/products/pending,Products chờ duyệt,-,Page<ProductDto>,Yes,"STAFF, ADMIN","page, size"
+Product (Admin/Staff),GET,/api/products/admin/all,Tất cả products (admin),-,Page<ProductDto>,Yes,"STAFF, ADMIN","page, size"
+Product (Admin/Staff),GET,/api/products/status/{status},Products theo status,-,Page<ProductDto>,Yes,"STAFF, ADMIN","page, size"
+Product (Admin/Staff),POST,/api/products/{id}/approve,Duyệt product,ProductApprovalRequest,ProductDto,Yes,"STAFF, ADMIN",-
+Product (Admin/Staff),POST,/api/products/{id}/reject,Từ chối product,ProductApprovalRequest,ProductDto,Yes,"STAFF, ADMIN",-
+Category,GET,/api/categories,Lấy tất cả categories,-,List<CategoryDto>,No,Public,-
+Category,GET,/api/categories/root,Root categories with children,-,List<CategoryDto>,No,Public,-
+Category,GET,/api/categories/{id},Category by ID,-,CategoryDto,No,Public,-
+Category,GET,/api/categories/slug/{slug},Category by slug,-,CategoryDto,No,Public,-
+Category,GET,/api/categories/{id}/children,Sub-categories,-,List<CategoryDto>,No,Public,-
+Category,POST,/api/categories,Tạo category,CategoryRequest,CategoryDto,Yes,ADMIN,-
+Category,PUT,/api/categories/{id},Cập nhật category,CategoryRequest,CategoryDto,Yes,ADMIN,-
+Category,DELETE,/api/categories/{id},Xóa category,-,String,Yes,ADMIN,-
+Category,PATCH,/api/categories/{id}/restore,Restore category,-,CategoryDto,Yes,ADMIN,-
+Brand,GET,/api/brands,Lấy tất cả brands,-,List<BrandDto>,No,Public,-
+Brand,GET,/api/brands/{id},Brand by ID,-,BrandDto,No,Public,-
+Brand,GET,/api/brands/slug/{slug},Brand by slug,-,BrandDto,No,Public,-
+Brand,POST,/api/brands,Tạo brand,BrandRequest,BrandDto,Yes,ADMIN,-
+Brand,PUT,/api/brands/{id},Cập nhật brand,BrandRequest,BrandDto,Yes,ADMIN,-
+Brand,DELETE,/api/brands/{id},Xóa brand,-,String,Yes,ADMIN,-
+Brand,PATCH,/api/brands/{id}/restore,Restore brand,-,BrandDto,Yes,ADMIN,-
+Cart,GET,/api/cart,Lấy giỏ hàng hiện tại,-,CartDto,Yes,CUSTOMER,-
+Cart,POST,/api/cart/items,Thêm item vào giỏ,AddToCartRequest,CartDto,Yes,CUSTOMER,-
+Cart,PUT,/api/cart/items/{itemId},Cập nhật quantity,UpdateCartItemRequest,CartDto,Yes,CUSTOMER,-
+Cart,DELETE,/api/cart/items/{itemId},Xóa item khỏi giỏ,-,CartDto,Yes,CUSTOMER,-
+Cart,DELETE,/api/cart,Xóa toàn bộ giỏ hàng,-,String,Yes,CUSTOMER,-
+Cart,POST,/api/cart/sync,Sync cart data,List<CartItemDto>,CartDto,Yes,CUSTOMER,-
+Cart,GET,/api/cart/count,Đếm số item trong giỏ,-,Integer,Yes,CUSTOMER,-
+Order (Customer),POST,/api/orders,Tạo order từ cart,CreateOrderRequest,OrderDto,Yes,CUSTOMER,-
+Order (Customer),GET,/api/orders/my-orders,Lấy orders của mình,-,Page<OrderDto>,Yes,CUSTOMER,"page, size"
+Order (Customer),GET,/api/orders/{orderId},Chi tiết order,-,OrderDto,Yes,CUSTOMER,-
+Order (Customer),GET,/api/orders/number/{orderNumber},Order by order number,-,OrderDto,Yes,CUSTOMER,-
+Order (Customer),POST,/api/orders/{orderId}/cancel,Hủy order,CancelOrderRequest,OrderDto,Yes,CUSTOMER,-
+Order (Admin/Staff),GET,/api/orders,Tất cả orders,-,Page<OrderDto>,Yes,"STAFF, ADMIN","page, size, sort"
+Order (Admin/Staff),GET,/api/orders/status/{status},Orders theo status,-,Page<OrderDto>,Yes,"STAFF, ADMIN","page, size"
+Order (Admin/Staff),GET,/api/orders/payment-status/{status},Orders theo payment status,-,Page<OrderDto>,Yes,"STAFF, ADMIN","page, size"
+Order (Admin/Staff),GET,/api/orders/pending,Pending orders,-,Page<OrderDto>,Yes,"STAFF, ADMIN","page, size"
+Order (Admin/Staff),GET,/api/orders/search,Tìm kiếm orders,-,Page<OrderDto>,Yes,"STAFF, ADMIN","keyword, page, size"
+Order (Admin/Staff),GET,/api/orders/date-range,Orders trong khoảng thời gian,-,Page<OrderDto>,Yes,"STAFF, ADMIN","startDate, endDate, page, size"
+Order (Admin/Staff),POST,/api/orders/{orderId}/confirm,Xác nhận order,-,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Admin/Staff),POST,/api/orders/{orderId}/processing,Đánh dấu đang xử lý,-,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Admin/Staff),POST,/api/orders/{orderId}/ship,Đánh dấu đã ship,-,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Admin/Staff),POST,/api/orders/{orderId}/deliver,Đánh dấu đã giao,-,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Admin/Staff),PUT,/api/orders/{orderId}/status,Cập nhật status,UpdateOrderStatusRequest,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Admin/Staff),POST,/api/orders/{orderId}/payment/paid,Đánh dấu đã thanh toán,-,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Admin/Staff),POST,/api/orders/{orderId}/payment/failed,Đánh dấu thanh toán thất bại,-,OrderDto,Yes,"STAFF, ADMIN",-
+Order (Statistics),GET,/api/orders/statistics,Thống kê orders,-,OrderStatistics,Yes,"ADMIN, STAFF",-
+Order (Statistics),GET,/api/orders/revenue/total,Tổng doanh thu,-,BigDecimal,Yes,ADMIN,-
+Order (Statistics),GET,/api/orders/revenue/date-range,Doanh thu theo thời gian,-,BigDecimal,Yes,ADMIN,"startDate, endDate"
+Review (Public),GET,/api/reviews/product/{productId},Reviews của product,-,Page<ReviewDto>,No,Public,"page, size"
+Review (Public),GET,/api/reviews/product/{productId}/rating/{rating},Filter by rating,-,Page<ReviewDto>,No,Public,"page, size"
+Review (Public),GET,/api/reviews/product/{productId}/verified,Verified purchase reviews,-,Page<ReviewDto>,No,Public,"page, size"
+Review (Public),GET,/api/reviews/product/{productId}/helpful,Most helpful reviews,-,Page<ReviewDto>,No,Public,"page, size"
+Review (Public),GET,/api/reviews/product/{productId}/summary,Rating summary,-,ProductRatingSummary,No,Public,-
+Review (Public),GET,/api/reviews/{reviewId},Review details,-,ReviewDto,No,Public,-
+Review (Customer),POST,/api/reviews,Tạo review,CreateReviewRequest,ReviewDto,Yes,CUSTOMER,-
+Review (Customer),PUT,/api/reviews/{reviewId},Cập nhật review,UpdateReviewRequest,ReviewDto,Yes,CUSTOMER (owner),-
+Review (Customer),DELETE,/api/reviews/{reviewId},Xóa review,-,String,Yes,CUSTOMER (owner),-
+Review (Customer),GET,/api/reviews/my-reviews,Reviews của mình,-,Page<ReviewDto>,Yes,CUSTOMER,"page, size"
+Review (Customer),POST,/api/reviews/{reviewId}/vote,Vote helpful/not helpful,isHelpful (boolean),ReviewDto,Yes,CUSTOMER,-
+Review (Customer),DELETE,/api/reviews/{reviewId}/vote,Xóa vote,-,ReviewDto,Yes,CUSTOMER,-
+Review (Admin/Staff),GET,/api/reviews/status/{status},Reviews theo status,-,Page<ReviewDto>,Yes,"STAFF, ADMIN","page, size"
+Review (Admin/Staff),GET,/api/reviews/pending,Pending reviews,-,Page<ReviewDto>,Yes,"STAFF, ADMIN","page, size"
+Review (Admin/Staff),POST,/api/reviews/{reviewId}/approve,Duyệt review,-,ReviewDto,Yes,"STAFF, ADMIN",-
+Review (Admin/Staff),POST,/api/reviews/{reviewId}/reject,Từ chối review,RejectReviewRequest,ReviewDto,Yes,"STAFF, ADMIN",-
+Review (Admin/Staff),POST,/api/reviews/{reviewId}/reply,Reply review,ReplyReviewRequest,ReviewDto,Yes,"SELLER, STAFF, ADMIN",-
+Recommendation,GET,/api/recommendations/homepage,Homepage recommendations,-,RecommendationDto,No,Public,-
+Recommendation,GET,/api/recommendations/trending,Trending products,-,RecommendationDto,No,Public,limit
+Recommendation,GET,/api/recommendations/best-sellers,Best sellers,-,RecommendationDto,No,Public,limit
+Recommendation,GET,/api/recommendations/top-rated,Top rated,-,RecommendationDto,No,Public,limit
+Recommendation,GET,/api/recommendations/new-arrivals,New arrivals,-,RecommendationDto,No,Public,limit
+Recommendation,GET,/api/recommendations/similar/{productId},Similar products,-,RecommendationDto,No,Public,limit
+Recommendation,GET,/api/recommendations/bought-together/{productId},Frequently bought together,-,RecommendationDto,No,Public,limit
+Recommendation,GET,/api/recommendations/for-you,Personalized recommendations,-,RecommendationDto,Optional,CUSTOMER,limit
+Cache Management,DELETE,/api/cache/clear,Clear all caches,-,String,Yes,ADMIN,-
+Cache Management,DELETE,/api/cache/clear/{cacheName},Clear specific cache,-,String,Yes,ADMIN,-
+Cache Management,GET,/api/cache/stats,Cache statistics,-,Map<String Object>,Yes,ADMIN,-
