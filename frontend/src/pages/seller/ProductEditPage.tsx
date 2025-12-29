@@ -5,6 +5,7 @@ import { useAllCategories } from "../../lib/hooks/useCategories";
 import { useBrands } from "../../lib/hooks/useBrands";
 import { X, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ImageUpload, UploadedImage } from "../../components/seller/ImageUpload";
 
 export const SellerProductEditPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +25,9 @@ export const SellerProductEditPage = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
 
+  // Product Images
+  const [productImages, setProductImages] = useState<UploadedImage[]>([]);
+
   // Load product data
   useEffect(() => {
     if (product) {
@@ -34,6 +38,17 @@ export const SellerProductEditPage = () => {
       setBrandId(product.brand.id);
       setBasePrice(product.basePrice.toString());
       setTags(product.tags || []);
+
+      // Load existing images
+      if (product.images && product.images.length > 0) {
+        const loadedImages: UploadedImage[] = product.images.map((img: any) => ({
+          url: img.imageUrl,
+          isPrimary: img.isPrimary || false,
+          displayOrder: img.displayOrder || 0,
+          altText: img.altText || "",
+        }));
+        setProductImages(loadedImages);
+      }
     }
   }, [product]);
 
@@ -67,6 +82,12 @@ export const SellerProductEditPage = () => {
       brandId,
       basePrice: parseFloat(basePrice),
       tags: tags.length > 0 ? tags : undefined,
+      images: productImages.length > 0 ? productImages.map((img) => ({
+        imageUrl: img.url,
+        altText: img.altText,
+        isPrimary: img.isPrimary,
+        displayOrder: img.displayOrder,
+      })) : undefined,
     };
 
     try {
@@ -248,6 +269,22 @@ export const SellerProductEditPage = () => {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Product Images */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <ImageUpload
+            images={productImages}
+            onImagesChange={setProductImages}
+            maxImages={10}
+            label="Product Images"
+          />
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> Updating images will replace all existing product-level images.
+              Variant-specific images are not affected.
+            </p>
           </div>
         </div>
 

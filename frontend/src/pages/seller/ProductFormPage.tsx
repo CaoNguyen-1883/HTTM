@@ -4,6 +4,7 @@ import { useCreateProduct } from "../../lib/hooks/useProducts";
 import { useAllCategories } from "../../lib/hooks/useCategories";
 import { useBrands } from "../../lib/hooks/useBrands";
 import { Plus, X } from "lucide-react";
+import { ImageUpload, UploadedImage } from "../../components/seller/ImageUpload";
 
 interface ProductVariantForm {
   name: string;
@@ -14,6 +15,7 @@ interface ProductVariantForm {
   attributes: Record<string, any>;
   isDefault: boolean;
   displayOrder: number;
+  images?: UploadedImage[];
 }
 
 export const SellerProductFormPage = () => {
@@ -35,6 +37,9 @@ export const SellerProductFormPage = () => {
   const [metaDescription, setMetaDescription] = useState("");
   const [metaKeywords, setMetaKeywords] = useState("");
 
+  // Product Images
+  const [productImages, setProductImages] = useState<UploadedImage[]>([]);
+
   // Variants
   const [variants, setVariants] = useState<ProductVariantForm[]>([{
     name: "Default",
@@ -45,6 +50,7 @@ export const SellerProductFormPage = () => {
     attributes: {},
     isDefault: true,
     displayOrder: 0,
+    images: [],
   }]);
 
   const addTag = () => {
@@ -69,6 +75,7 @@ export const SellerProductFormPage = () => {
       attributes: {},
       isDefault: false,
       displayOrder: variants.length,
+      images: [],
     }]);
   };
 
@@ -130,6 +137,12 @@ export const SellerProductFormPage = () => {
       metaTitle: metaTitle || undefined,
       metaDescription: metaDescription || undefined,
       metaKeywords: metaKeywords || undefined,
+      images: productImages.length > 0 ? productImages.map((img) => ({
+        imageUrl: img.url,
+        altText: img.altText,
+        isPrimary: img.isPrimary,
+        displayOrder: img.displayOrder,
+      })) : undefined,
       variants: validVariants.map((v, index) => ({
         name: v.name,
         sku: v.sku,
@@ -139,6 +152,7 @@ export const SellerProductFormPage = () => {
         attributes: Object.keys(v.attributes).length > 0 ? v.attributes : undefined,
         isDefault: v.isDefault || index === 0,
         displayOrder: index,
+        imageUrls: v.images && v.images.length > 0 ? v.images.map(img => img.url) : undefined,
       })),
     };
 
@@ -297,6 +311,16 @@ export const SellerProductFormPage = () => {
           </div>
         </div>
 
+        {/* Product Images */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <ImageUpload
+            images={productImages}
+            onImagesChange={setProductImages}
+            maxImages={10}
+            label="Product Images"
+          />
+        </div>
+
         {/* SEO Fields (Optional) */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">SEO Settings (Optional)</h2>
@@ -411,7 +435,18 @@ export const SellerProductFormPage = () => {
                     />
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
+
+                {/* Variant Images */}
+                <div className="mt-4">
+                  <ImageUpload
+                    images={variant.images || []}
+                    onImagesChange={(images) => updateVariant(index, 'images', images)}
+                    maxImages={5}
+                    label={`Variant Images (Optional)`}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between mt-4">
                   <button
                     type="button"
                     onClick={() => addVariantAttribute(index)}

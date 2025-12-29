@@ -220,4 +220,55 @@ export const productsApi = {
     });
     return response.data;
   },
+
+  // ===== PRODUCT IMAGE MANAGEMENT =====
+
+  // Get product images
+  getProductImages: async (productId: string): Promise<any[]> => {
+    const response = await apiClient.get(`/products/${productId}/images`);
+    return response.data;
+  },
+
+  // Add image to product
+  addProductImage: async (productId: string, data: {
+    imageUrl: string;
+    altText?: string;
+    isPrimary?: boolean;
+    displayOrder?: number;
+  }): Promise<any> => {
+    const response = await apiClient.post(`/products/${productId}/images`, data);
+    return response.data;
+  },
+
+  // Delete product image
+  deleteProductImage: async (productId: string, imageId: string): Promise<void> => {
+    await apiClient.delete(`/products/${productId}/images/${imageId}`);
+  },
+
+  // Set primary image
+  setPrimaryImage: async (productId: string, imageId: string): Promise<void> => {
+    await apiClient.patch(`/products/${productId}/images/${imageId}/set-primary`);
+  },
+
+  // Reorder images
+  reorderImages: async (productId: string, imageIds: string[]): Promise<void> => {
+    await apiClient.patch(`/products/${productId}/images/reorder`, imageIds);
+  },
+
+  // Add image to variant
+  addVariantImage: async (productId: string, variantId: string, data: {
+    imageUrl: string;
+    altText?: string;
+    isPrimary?: boolean;
+    displayOrder?: number;
+  }): Promise<any> => {
+    const response = await apiClient.post(`/products/${productId}/images/variants/${variantId}`, data);
+    return response.data;
+  },
+
+  // Get variant images
+  getVariantImages: async (variantId: string): Promise<any[]> => {
+    const response = await apiClient.get(`/products/images/variants/${variantId}`);
+    return response.data;
+  },
 };

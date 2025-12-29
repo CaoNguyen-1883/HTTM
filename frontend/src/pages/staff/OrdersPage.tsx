@@ -9,14 +9,16 @@ import { useSearchParams } from "react-router-dom";
 export const StaffOrdersPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
+
+  // Get state from URL params or use defaults
+  const currentPage = parseInt(searchParams.get("page") || "0");
+  const statusFilter = (searchParams.get("status") || "") as OrderStatus | "";
+  const paymentStatusFilter = (searchParams.get("paymentStatus") || "") as PaymentStatus | "";
+
+  // Local state for order number search input
   const [orderNumberSearch, setOrderNumberSearch] = useState(
     searchParams.get("orderNumber") || ""
   );
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | "">("");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState<
-    PaymentStatus | ""
-  >("");
 
   // Search by order number if provided in URL params
   const { data: orderByNumber, isLoading: isLoadingByNumber } =
@@ -38,6 +40,21 @@ export const StaffOrdersPage = () => {
     }
   }, [orderByNumber, searchParams]);
 
+  // Helper function to update URL params
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === undefined || value === "" || value === null) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, String(value));
+      }
+    });
+
+    setSearchParams(newParams);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (orderNumberSearch.trim()) {
@@ -53,8 +70,20 @@ export const StaffOrdersPage = () => {
   };
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+    updateParams({ page: newPage });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleStatusChange = (status: OrderStatus | "") => {
+    updateParams({ status: status || undefined, page: 0 });
+  };
+
+  const handlePaymentStatusChange = (paymentStatus: PaymentStatus | "") => {
+    updateParams({ paymentStatus: paymentStatus || undefined, page: 0 });
+  };
+
+  const clearFilters = () => {
+    updateParams({ status: undefined, paymentStatus: undefined, page: 0 });
   };
 
   const isLoading = isLoadingOrders || isLoadingByNumber;
@@ -116,10 +145,7 @@ export const StaffOrdersPage = () => {
                 </label>
                 <select
                   value={statusFilter}
-                  onChange={(e) => {
-                    setStatusFilter(e.target.value as OrderStatus | "");
-                    setCurrentPage(0);
-                  }}
+                  onChange={(e) => handleStatusChange(e.target.value as OrderStatus | "")}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Statuses</option>
@@ -138,10 +164,7 @@ export const StaffOrdersPage = () => {
                 </label>
                 <select
                   value={paymentStatusFilter}
-                  onChange={(e) => {
-                    setPaymentStatusFilter(e.target.value as PaymentStatus | "");
-                    setCurrentPage(0);
-                  }}
+                  onChange={(e) => handlePaymentStatusChange(e.target.value as PaymentStatus | "")}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">All Payment Statuses</option>
@@ -179,10 +202,7 @@ export const StaffOrdersPage = () => {
           <div className="text-gray-500 text-lg">No orders found</div>
           {(statusFilter || paymentStatusFilter) && (
             <button
-              onClick={() => {
-                setStatusFilter("");
-                setPaymentStatusFilter("");
-              }}
+              onClick={clearFilters}
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Clear Filters

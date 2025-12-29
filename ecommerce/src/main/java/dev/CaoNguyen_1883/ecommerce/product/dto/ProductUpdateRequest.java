@@ -1,6 +1,7 @@
 package dev.CaoNguyen_1883.ecommerce.product.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -36,4 +37,8 @@ public class ProductUpdateRequest {
 
     @Schema(description = "Product tags")
     private List<String> tags;
+
+    @Valid
+    @Schema(description = "Product images (replaces all existing images if provided)")
+    private List<ProductImageRequest> images;
 }

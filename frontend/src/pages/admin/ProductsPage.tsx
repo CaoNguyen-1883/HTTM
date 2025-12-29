@@ -1,16 +1,24 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAdminProducts, useProduct, useApproveProduct, useRejectProduct } from "../../lib/hooks/useProducts";
 import { ProductStatus } from "../../lib/types";
 import { Search, Filter, ChevronLeft, ChevronRight, Eye, CheckCircle, XCircle, X } from "lucide-react";
 import { ProductDetailModal } from "../../components/admin/ProductDetailModal";
 
 export const AdminProductsPage = () => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [keyword, setKeyword] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ProductStatus | "">("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Get state from URL params or use defaults
+  const currentPage = parseInt(searchParams.get("page") || "0");
+  const keyword = searchParams.get("keyword") || "";
+  const statusFilter = (searchParams.get("status") || "") as ProductStatus | "";
+
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [rejectingProductId, setRejectingProductId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+
+  // Local state for search input (only updates URL on submit)
+  const [searchInput, setSearchInput] = useState(keyword);
 
   const { data: productsData, isLoading } = useAdminProducts({
     keyword: keyword || undefined,
@@ -24,14 +32,33 @@ export const AdminProductsPage = () => {
   const approveMutation = useApproveProduct();
   const rejectMutation = useRejectProduct();
 
+  // Helper function to update URL params
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === undefined || value === "" || value === null) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, String(value));
+      }
+    });
+
+    setSearchParams(newParams);
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(0);
+    updateParams({ keyword: searchInput, page: 0 });
   };
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+    updateParams({ page: newPage });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleStatusChange = (status: ProductStatus | "") => {
+    updateParams({ status: status || undefined, page: 0 });
   };
 
   const handleApprove = async (productId: string, productName: string) => {
@@ -173,8 +200,8 @@ export const AdminProductsPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   placeholder="Search by product name..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
@@ -189,10 +216,7 @@ export const AdminProductsPage = () => {
               </label>
               <select
                 value={statusFilter}
-                onChange={(e) => {
-                  setStatusFilter(e.target.value as ProductStatus | "");
-                  setCurrentPage(0);
-                }}
+                onChange={(e) => handleStatusChange(e.target.value as ProductStatus | "")}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Statuses</option>

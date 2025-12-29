@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -41,4 +42,7 @@ public class ProductVariantRequest {
 
     @Schema(description = "Display order")
     private Integer displayOrder;
+
+    @Schema(description = "Variant-specific image URLs (upload images first)")
+    private List<String> imageUrls;
 }

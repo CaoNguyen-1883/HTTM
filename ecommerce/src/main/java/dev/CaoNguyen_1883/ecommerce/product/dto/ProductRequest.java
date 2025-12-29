@@ -52,6 +52,10 @@ public class ProductRequest {
     private String metaKeywords;
 
     @Valid
+    @Schema(description = "Product images (upload images first to get URLs)")
+    private List<ProductImageRequest> images;
+
+    @Valid
     @Schema(description = "Product variants")
     private List<ProductVariantRequest> variants;
 }

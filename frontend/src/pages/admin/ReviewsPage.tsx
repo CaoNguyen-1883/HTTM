@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ReviewStatus } from "../../lib/types";
 import { Filter, ChevronLeft, ChevronRight, CheckCircle, XCircle, Star, MessageSquare, X } from "lucide-react";
 import { usePendingReviews, useReviewsByStatus, useApproveReview, useRejectReview, useReplyToReview } from "../../lib/hooks/useReviews";
 
 export const AdminReviewsPage = () => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [statusFilter, setStatusFilter] = useState<ReviewStatus | "">("");
-  const [ratingFilter, setRatingFilter] = useState<number | "">("");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Get state from URL params or use defaults
+  const currentPage = parseInt(searchParams.get("page") || "0");
+  const statusFilter = (searchParams.get("status") || "") as ReviewStatus | "";
+  const ratingFilter = searchParams.get("rating") ? Number(searchParams.get("rating")) : "" as number | "";
 
   // Modal states
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -39,9 +43,36 @@ export const AdminReviewsPage = () => {
   const rejectReview = useRejectReview();
   const replyToReview = useReplyToReview();
 
+  // Helper function to update URL params
+  const updateParams = (updates: Record<string, string | number | undefined>) => {
+    const newParams = new URLSearchParams(searchParams);
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === undefined || value === "" || value === null) {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, String(value));
+      }
+    });
+
+    setSearchParams(newParams);
+  };
+
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+    updateParams({ page: newPage });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleStatusChange = (status: ReviewStatus | "") => {
+    updateParams({ status: status || undefined, page: 0 });
+  };
+
+  const handleRatingChange = (rating: number | "") => {
+    updateParams({ rating: rating || undefined, page: 0 });
+  };
+
+  const clearFilters = () => {
+    updateParams({ status: undefined, rating: undefined, page: 0 });
   };
 
   const handleApprove = async (reviewId: string) => {
@@ -153,10 +184,7 @@ export const AdminReviewsPage = () => {
             </label>
             <select
               value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value as ReviewStatus | "");
-                setCurrentPage(0);
-              }}
+              onChange={(e) => handleStatusChange(e.target.value as ReviewStatus | "")}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Statuses</option>
@@ -176,10 +204,7 @@ export const AdminReviewsPage = () => {
             </label>
             <select
               value={ratingFilter}
-              onChange={(e) => {
-                setRatingFilter(e.target.value ? Number(e.target.value) : "");
-                setCurrentPage(0);
-              }}
+              onChange={(e) => handleRatingChange(e.target.value ? Number(e.target.value) : "")}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">All Ratings</option>
@@ -206,10 +231,7 @@ export const AdminReviewsPage = () => {
           </p>
           {(statusFilter || ratingFilter) && (
             <button
-              onClick={() => {
-                setStatusFilter("");
-                setRatingFilter("");
-              }}
+              onClick={clearFilters}
               className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               Clear Filters

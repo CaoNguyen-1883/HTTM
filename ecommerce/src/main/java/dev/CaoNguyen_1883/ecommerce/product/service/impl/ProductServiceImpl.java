@@ -36,6 +36,7 @@ public class ProductServiceImpl implements IProductService {
     private final BrandRepository brandRepository;
     private final UserRepository userRepository;
     private final ProductVariantRepository variantRepository;
+    private final ProductImageRepository imageRepository;
     private final ProductMapper productMapper;
     private final ProductVariantMapper variantMapper;
 
@@ -204,7 +205,37 @@ public class ProductServiceImpl implements IProductService {
             for (ProductVariantRequest variantReq : request.getVariants()) {
                 ProductVariant variant = variantMapper.toEntity(variantReq);
                 variant.setProduct(saved);
-                variantRepository.save(variant);
+                ProductVariant savedVariant = variantRepository.save(variant);
+
+                // Add variant-specific images if provided
+                if (variantReq.getImageUrls() != null && !variantReq.getImageUrls().isEmpty()) {
+                    int displayOrder = 0;
+                    for (String imageUrl : variantReq.getImageUrls()) {
+                        ProductImage variantImage = ProductImage.builder()
+                                .product(saved)
+                                .variant(savedVariant)
+                                .imageUrl(imageUrl)
+                                .isPrimary(displayOrder == 0) // First image is primary
+                                .displayOrder(displayOrder++)
+                                .build();
+                        imageRepository.save(variantImage);
+                    }
+                }
+            }
+        }
+
+        // Create product-level images if provided
+        if (request.getImages() != null && !request.getImages().isEmpty()) {
+            for (ProductImageRequest imgReq : request.getImages()) {
+                ProductImage image = ProductImage.builder()
+                        .product(saved)
+                        .variant(null) // Product-level image
+                        .imageUrl(imgReq.getImageUrl())
+                        .altText(imgReq.getAltText())
+                        .isPrimary(imgReq.getIsPrimary() != null ? imgReq.getIsPrimary() : false)
+                        .displayOrder(imgReq.getDisplayOrder() != null ? imgReq.getDisplayOrder() : 0)
+                        .build();
+                imageRepository.save(image);
             }
         }
 
@@ -249,6 +280,32 @@ public class ProductServiceImpl implements IProductService {
         if (request.getDescription() != null) product.setDescription(request.getDescription());
         if (request.getShortDescription() != null) product.setShortDescription(request.getShortDescription());
         if (request.getBasePrice() != null) product.setBasePrice(request.getBasePrice());
+
+        // Update product-level images if provided (replaces all existing product-level images)
+        if (request.getImages() != null) {
+            // Delete existing product-level images (not variant images)
+            List<ProductImage> existingImages = imageRepository.findByProductId(id);
+            List<ProductImage> productLevelImages = existingImages.stream()
+                    .filter(img -> img.getVariant() == null)
+                    .toList();
+
+            imageRepository.deleteAll(productLevelImages);
+            log.debug("Deleted {} existing product-level images", productLevelImages.size());
+
+            // Add new images
+            for (ProductImageRequest imgReq : request.getImages()) {
+                ProductImage image = ProductImage.builder()
+                        .product(product)
+                        .variant(null) // Product-level image
+                        .imageUrl(imgReq.getImageUrl())
+                        .altText(imgReq.getAltText())
+                        .isPrimary(imgReq.getIsPrimary() != null ? imgReq.getIsPrimary() : false)
+                        .displayOrder(imgReq.getDisplayOrder() != null ? imgReq.getDisplayOrder() : 0)
+                        .build();
+                imageRepository.save(image);
+            }
+            log.debug("Added {} new product-level images", request.getImages().size());
+        }
 
         // If product was approved, set back to PENDING after update
         if (product.getStatus() == ProductStatus.APPROVED) {
