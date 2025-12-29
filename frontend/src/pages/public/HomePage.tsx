@@ -12,33 +12,87 @@ export const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="container mx-auto px-4 py-20">
-          <div className="max-w-3xl">
-            <h1 className="text-5xl font-bold mb-6">
-              Welcome to E-Commerce
-            </h1>
-            <p className="text-xl mb-8 text-blue-100">
-              Discover the best deals on gaming gear, PC components, and accessories
-            </p>
-            <div className="flex gap-4">
-              <Link
-                to="/products"
-                className="flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors"
-              >
-                Shop Now
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/products?sort=createdAt,desc"
-                className="flex items-center gap-2 bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors border border-blue-500"
-              >
-                New Arrivals
-                <Clock className="w-5 h-5" />
-              </Link>
+      <section className="relative bg-white overflow-hidden">
+        {/* Decorative Background Elements */}
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-30 pointer-events-none" />
+        <div className="absolute top-20 right-1/4 w-2 h-2 bg-blue-600 rounded-full opacity-60" />
+        <div className="absolute left-0 top-0 h-1 w-20 bg-blue-600" />
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto py-16 sm:py-20 lg:py-24">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+              {/* Left Column - Content */}
+              <div className="lg:col-span-7">
+                {/* Key Phrase */}
+                <div className="text-sm font-semibold text-blue-600 uppercase tracking-wider mb-4">
+                  Gaming Gear Redefined
+                </div>
+
+                {/* Heading */}
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight tracking-tight max-w-2xl mb-6">
+                  Premium PC Components for Every Build
+                </h1>
+
+                {/* Subheadline */}
+                <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-xl mb-10">
+                  Discover cutting-edge hardware, peripherals, and accessories
+                  trusted by gamers and creators worldwide.
+                </p>
+
+                {/* CTAs */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link
+                    to="/products"
+                    className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-xl font-semibold text-base shadow-lg shadow-gray-900/25 hover:bg-gray-800 hover:shadow-xl hover:scale-105 transition-all duration-200"
+                  >
+                    Shop Now
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+
+                  <Link
+                    to="/products?sort=createdAt,desc"
+                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-gray-900 border-2 border-gray-200 rounded-xl font-semibold text-base hover:border-gray-900 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    New Arrivals
+                    <Clock className="w-5 h-5" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right Column - Geometric Element */}
+              <div className="hidden lg:block lg:col-span-5">
+                <div className="grid grid-cols-4 gap-3 opacity-60">
+                  {/* Row 1 */}
+                  <div className="aspect-square bg-blue-600 opacity-10 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-100 rounded-lg shadow-lg" />
+                  <div className="aspect-square bg-gray-200 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-20 rounded-lg" />
+
+                  {/* Row 2 */}
+                  <div className="aspect-square bg-gray-200 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-30 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-10 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-100 rounded-lg shadow-lg" />
+
+                  {/* Row 3 */}
+                  <div className="aspect-square bg-blue-600 opacity-100 rounded-lg shadow-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-10 rounded-lg" />
+                  <div className="aspect-square bg-gray-200 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-20 rounded-lg" />
+
+                  {/* Row 4 */}
+                  <div className="aspect-square bg-blue-600 opacity-20 rounded-lg" />
+                  <div className="aspect-square bg-gray-200 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-30 rounded-lg" />
+                  <div className="aspect-square bg-blue-600 opacity-10 rounded-lg" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Bottom Divider */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
       </section>
 
       {/* Features Section */}
@@ -138,11 +192,10 @@ export const HomePage = () => {
       {/* Call to Action */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Start Shopping?
-          </h2>
+          <h2 className="text-3xl font-bold mb-4">Ready to Start Shopping?</h2>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers and discover amazing deals on the latest products
+            Join thousands of satisfied customers and discover amazing deals on
+            the latest products
           </p>
           <Link
             to="/products"

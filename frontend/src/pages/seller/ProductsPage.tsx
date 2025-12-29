@@ -1,7 +1,17 @@
 import { useState } from "react";
 import { useMyProducts, useDeleteProduct } from "../../lib/hooks/useProducts";
 import { ProductStatus } from "../../lib/types";
-import { Search, Filter, ChevronLeft, ChevronRight, Eye, Edit, Trash2, Plus, Package } from "lucide-react";
+import {
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Edit,
+  Trash2,
+  Plus,
+  Package,
+} from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 
 export const SellerProductsPage = () => {
@@ -27,7 +37,9 @@ export const SellerProductsPage = () => {
   const deleteMutation = useDeleteProduct();
 
   // Helper function to update URL params
-  const updateParams = (updates: Record<string, string | number | undefined>) => {
+  const updateParams = (
+    updates: Record<string, string | number | undefined>,
+  ) => {
     const newParams = new URLSearchParams(searchParams);
 
     Object.entries(updates).forEach(([key, value]) => {
@@ -63,6 +75,15 @@ export const SellerProductsPage = () => {
     try {
       await deleteMutation.mutateAsync(id);
       alert("Product deleted successfully!");
+
+      // If this was the last item on current page and not first page, go back one page
+      if (
+        productsData &&
+        productsData.content.length === 1 &&
+        currentPage > 0
+      ) {
+        updateParams({ page: currentPage - 1 });
+      }
     } catch (error: any) {
       alert(error.response?.data?.message || "Failed to delete product");
     }
@@ -79,7 +100,9 @@ export const SellerProductsPage = () => {
     };
 
     return (
-      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status]}`}>
+      <span
+        className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status]}`}
+      >
         {status.replace("_", " ")}
       </span>
     );
@@ -129,7 +152,9 @@ export const SellerProductsPage = () => {
               </label>
               <select
                 value={statusFilter}
-                onChange={(e) => handleStatusChange(e.target.value as ProductStatus | "")}
+                onChange={(e) =>
+                  handleStatusChange(e.target.value as ProductStatus | "")
+                }
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Statuses</option>
@@ -173,7 +198,10 @@ export const SellerProductsPage = () => {
                 className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow"
               >
                 <img
-                  src={product.primaryImage || "https://via.placeholder.com/400x300"}
+                  src={
+                    product.primaryImage ||
+                    "https://via.placeholder.com/400x300"
+                  }
                   alt={product.name}
                   className="w-full h-48 object-cover"
                 />
@@ -193,22 +221,35 @@ export const SellerProductsPage = () => {
                         <span className="font-medium text-blue-600">
                           ${product.minPrice.toFixed(2)}
                         </span>
-                        {product.maxPrice != null && product.minPrice !== product.maxPrice && (
-                          <>
-                            <span>-</span>
-                            <span className="font-medium text-blue-600">
-                              ${product.maxPrice.toFixed(2)}
-                            </span>
-                          </>
-                        )}
+                        {product.maxPrice != null &&
+                          product.minPrice !== product.maxPrice && (
+                            <>
+                              <span>-</span>
+                              <span className="font-medium text-blue-600">
+                                ${product.maxPrice.toFixed(2)}
+                              </span>
+                            </>
+                          )}
                       </>
                     ) : (
                       <span className="text-gray-400">Price not set</span>
                     )}
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
-                    <span>⭐ {product.averageRating != null ? product.averageRating.toFixed(1) : '0.0'} ({product.totalReviews || 0})</span>
-                    <span className={product.totalStock > 0 ? "text-green-600" : "text-red-600"}>
+                    <span>
+                      ⭐{" "}
+                      {product.averageRating != null
+                        ? product.averageRating.toFixed(1)
+                        : "0.0"}{" "}
+                      ({product.totalReviews || 0})
+                    </span>
+                    <span
+                      className={
+                        product.totalStock > 0
+                          ? "text-green-600"
+                          : "text-red-600"
+                      }
+                    >
                       Stock: {product.totalStock || 0}
                     </span>
                   </div>
@@ -221,7 +262,13 @@ export const SellerProductsPage = () => {
                       View
                     </button>
                     <button
-                      onClick={() => navigate(`/seller/products/${product.id}/edit`)}
+                      onClick={() =>
+                        navigate(`/seller/products/${product.id}/edit`, {
+                          state: {
+                            from: `/seller/products?${searchParams.toString()}`,
+                          },
+                        })
+                      }
                       className="px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm font-medium"
                     >
                       <Edit className="w-4 h-4" />

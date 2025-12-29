@@ -18,7 +18,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
   const discount =
     product.basePrice > product.minPrice
-      ? Math.round(((product.basePrice - product.minPrice) / product.basePrice) * 100)
+      ? Math.round(
+          ((product.basePrice - product.minPrice) / product.basePrice) * 100,
+        )
       : 0;
 
   const handleQuickAddToCart = async (e: React.MouseEvent) => {
@@ -88,7 +90,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               <button
                 onClick={handleQuickAddToCart}
                 disabled={isAdding}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart className="w-4 h-4" />
                 {isAdding ? "Adding..." : "Add to Cart"}
@@ -130,7 +132,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               ))}
             </div>
             <span className="text-sm text-gray-600">
-              {product.averageRating != null ? product.averageRating.toFixed(1) : '0.0'} ({product.totalReviews || 0})
+              {product.averageRating != null
+                ? product.averageRating.toFixed(1)
+                : "0.0"}{" "}
+              ({product.totalReviews || 0})
             </span>
           </div>
 
@@ -160,7 +165,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
           {/* Stock */}
           <div className="mt-2 text-xs text-gray-500">
-             {product.totalStock} {product.totalStock == 1 ? "stock" : "stocks"}
+            {product.totalStock} {product.totalStock == 1 ? "stock" : "stocks"}
           </div>
         </div>
       </Link>

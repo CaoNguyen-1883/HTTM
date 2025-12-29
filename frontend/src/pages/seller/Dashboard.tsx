@@ -9,21 +9,17 @@ import {
 } from "lucide-react";
 
 export const SellerDashboard = () => {
-  // Mock data - replace with actual API calls
+  // TODO: Replace with actual API calls when backend endpoints are ready
   const stats = {
-    totalProducts: 45,
-    pendingProducts: 3,
-    approvedProducts: 40,
-    rejectedProducts: 2,
-    totalOrders: 156,
-    totalRevenue: 15420.50,
-    averageRating: 4.6,
-    totalReviews: 89,
+    totalProducts: 0,
+    pendingProducts: 0,
+    approvedProducts: 0,
+    rejectedProducts: 0,
+    totalOrders: 0,
+    totalRevenue: 0,
+    averageRating: 0,
+    totalReviews: 0,
   };
-
-  // const recentProducts = [
-  //   // Mock data
-  // ];
 
   const statCards = [
     {
@@ -84,7 +80,9 @@ export const SellerDashboard = () => {
                     {stat.value}
                   </p>
                   {stat.subtitle && (
-                    <p className="text-xs text-gray-500 mt-1">{stat.subtitle}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {stat.subtitle}
+                    </p>
                   )}
                   {stat.urgent && (
                     <p className="text-xs text-yellow-600 mt-1">
@@ -117,7 +115,9 @@ export const SellerDashboard = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Approved Products</p>
+              <p className="text-sm font-medium text-gray-600">
+                Approved Products
+              </p>
               <p className="text-2xl font-bold text-green-600 mt-2">
                 {stats.approvedProducts}
               </p>
@@ -134,7 +134,9 @@ export const SellerDashboard = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Pending Approval</p>
+              <p className="text-sm font-medium text-gray-600">
+                Pending Approval
+              </p>
               <p className="text-2xl font-bold text-yellow-600 mt-2">
                 {stats.pendingProducts}
               </p>
@@ -151,7 +153,9 @@ export const SellerDashboard = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Rejected Products</p>
+              <p className="text-sm font-medium text-gray-600">
+                Rejected Products
+              </p>
               <p className="text-2xl font-bold text-red-600 mt-2">
                 {stats.rejectedProducts}
               </p>
@@ -216,11 +220,15 @@ export const SellerDashboard = () => {
         <ul className="space-y-2 text-sm text-blue-800">
           <li className="flex items-start gap-2">
             <span className="text-blue-600 mt-0.5">•</span>
-            <span>Add clear, high-quality images to your products to increase sales</span>
+            <span>
+              Add clear, high-quality images to your products to increase sales
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 mt-0.5">•</span>
-            <span>Write detailed descriptions including specifications and features</span>
+            <span>
+              Write detailed descriptions including specifications and features
+            </span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-600 mt-0.5">•</span>
