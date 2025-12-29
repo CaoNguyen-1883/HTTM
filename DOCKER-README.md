@@ -160,22 +160,7 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
 
-### Checklist cho production
-
-- [ ] Đổi JWT_SECRET thành giá trị random mạnh (tối thiểu 256 bits)
-- [ ] Đổi DB_PASSWORD thành password mạnh
-- [ ] Đặt TEST_USERS=false
-- [ ] Đặt FORCE_RESEED=false
-- [ ] Đặt REDIS_PASSWORD nếu expose Redis
-- [ ] Kiểm tra SPRING_PROFILE=prod
-- [ ] Enable HTTPS với SSL certificates
-- [ ] Cấu hình firewall rules
-- [ ] Setup backup strategy cho volumes
-
----
-
 ## Deploy lên Production
-
 ### Bước 1: Chuẩn bị môi trường
 
 ```bash
@@ -621,25 +606,4 @@ frontend:
 
 ---
 
-## Tài liệu tham khảo
 
-- Docker Documentation: https://docs.docker.com/
-- Docker Compose Reference: https://docs.docker.com/compose/compose-file/
-- Spring Boot Docker Guide: https://spring.io/guides/gs/spring-boot-docker/
-- FastAPI Deployment: https://fastapi.tiangolo.com/deployment/docker/
-
----
-
-## Hỗ trợ
-
-Nếu gặp vấn đề:
-
-1. Kiểm tra logs: make logs hoặc docker-compose logs
-2. Xem lại phần Troubleshooting ở trên
-3. Kiểm tra Docker system: docker system df
-4. Restart services: make restart
-5. Reset toàn bộ: make down-volumes && make init (CẢNH BÁO: mất data)
-
----
-
-Chúc bạn deploy thành công!
