@@ -84,6 +84,7 @@ export const ProductDetailPage = () => {
 
   const maxQuantity = selectedVariant?.availableStock || selectedVariant?.stock || 0;
 
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -185,12 +186,12 @@ export const ProductDetailPage = () => {
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-blue-600">
-                {formatCurrency(finalPrice)}
+                ${finalPrice}
               </span>
               {hasDiscount && (
                 <>
                   <span className="text-lg text-gray-400 line-through">
-                    {formatCurrency(product.basePrice)}
+                    ${product.basePrice}
                   </span>
                   <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-semibold">
                     -{discountPercent}%
@@ -324,7 +325,7 @@ export const ProductDetailPage = () => {
                 : "text-gray-500 hover:text-gray-700"
             }`}
           >
-            Reviews ({product.totalReviews})
+            Reviews ({reviewsData?.totalElements})
           </button>
         </div>
 

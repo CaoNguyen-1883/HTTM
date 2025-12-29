@@ -17,7 +17,7 @@ interface AIRecommendedProductsProps {
 }
 
 /**
- * 🤖 AI-Powered Product Recommendations Component
+ * AI-Powered Product Recommendations Component
  * Uses Python ML API (Item-Based Collaborative Filtering) + Spring Boot for product details
  *
  * Types:
@@ -114,7 +114,7 @@ export const AIRecommendedProducts = ({
         <div className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-yellow-600" />
           <p className="text-sm text-yellow-800">
-            Đang tải gợi ý từ hệ thống dự phòng...
+            Loading fallback recommendations...
           </p>
         </div>
       </div>
@@ -143,7 +143,7 @@ export const AIRecommendedProducts = ({
           )}
         </div>
         <div className="text-sm text-gray-500">
-          {products.length} sản phẩm
+          {products.length} Products
         </div>
       </div>
 
@@ -233,9 +233,9 @@ export const AIRecommendedProducts = ({
       {/* Footer Info */}
       <div className="mt-6 pt-4 border-t border-gray-200">
         <p className="text-xs text-center text-gray-500">
-          {type === "personalized" && "🎯 Gợi ý dựa trên lịch sử mua hàng của bạn"}
-          {type === "similar" && "🔗 Sản phẩm tương tự được mua cùng nhau"}
-          {type === "popular" && "🔥 Sản phẩm được yêu thích nhất"}
+          {type === "personalized" && "Recommended based on your purchase history"}
+          {type === "similar" && "Products that were purchased together"}
+          {type === "popular" && "Products that are most popular"}
         </p>
       </div>
     </div>

@@ -78,7 +78,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {/* Out of Stock Badge */}
           {!product.hasStock && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <span className="text-white font-semibold">Hết hàng</span>
+              <span className="text-white font-semibold">Out of Stock</span>
             </div>
           )}
 
@@ -91,7 +91,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ShoppingCart className="w-4 h-4" />
-                {isAdding ? "Đang thêm..." : "Thêm vào giỏ"}
+                {isAdding ? "Adding..." : "Add to Cart"}
               </button>
             </div>
           )}
@@ -138,15 +138,15 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <div className="flex items-baseline gap-2">
             {product.minPrice === product.maxPrice ? (
               <span className="text-lg font-bold text-gray-900">
-                {formatCurrency(product.minPrice)}
+                ${product.minPrice}
               </span>
             ) : (
               <>
                 <span className="text-lg font-bold text-gray-900">
-                  {formatCurrency(product.minPrice)}
+                  ${product.minPrice}
                 </span>
                 <span className="text-sm text-gray-500">
-                  - {formatCurrency(product.maxPrice)}
+                  - ${product.maxPrice}
                 </span>
               </>
             )}

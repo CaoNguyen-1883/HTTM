@@ -74,7 +74,7 @@ export const PublicLayout = () => {
                             onClick={() => setShowUserMenu(false)}
                           >
                             <Package className="w-4 h-4" />
-                            Đơn hàng của tôi
+                            Orders
                           </Link>
                           <Link
                             to="/customer/profile"
@@ -82,7 +82,7 @@ export const PublicLayout = () => {
                             onClick={() => setShowUserMenu(false)}
                           >
                             <User className="w-4 h-4" />
-                            Tài khoản
+                            Profile
                           </Link>
                           <hr className="my-2" />
                           <button
@@ -90,7 +90,7 @@ export const PublicLayout = () => {
                             className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 w-full text-left"
                           >
                             <LogOut className="w-4 h-4" />
-                            Đăng xuất
+                            Logout
                           </button>
                         </div>
                       </>
@@ -103,19 +103,19 @@ export const PublicLayout = () => {
                     to="/login"
                     className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
                   >
-                    Đăng nhập
+                    Login
                   </Link>
                   <Link
                     to="/register"
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
                   >
-                    Đăng ký
+                    Register
                   </Link>
                 </>
               )}
 
               {/* Portal Links */}
-              <div className="ml-4 border-l pl-4 flex gap-3">
+              {/*<div className="ml-4 border-l pl-4 flex gap-3">
                 <Link
                   to="/admin/login"
                   className="text-xs text-gray-500 hover:text-gray-700"
@@ -134,7 +134,7 @@ export const PublicLayout = () => {
                 >
                   Staff
                 </Link>
-              </div>
+              </div>*/}
             </nav>
 
             {/* Mobile Menu Button */}
@@ -168,7 +168,7 @@ export const PublicLayout = () => {
                     className="flex items-center justify-between py-2 text-gray-700 hover:text-blue-600"
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    <span>Giỏ hàng</span>
+                    <span>Cart</span>
                     {cartCount > 0 && (
                       <span className="bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
                         {cartCount}
@@ -180,14 +180,14 @@ export const PublicLayout = () => {
                     className="block py-2 text-gray-700 hover:text-blue-600"
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    Đơn hàng
+                    Orders
                   </Link>
                   <Link
                     to="/customer/profile"
                     className="block py-2 text-gray-700 hover:text-blue-600"
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    Tài khoản
+                    Account
                   </Link>
                   <button
                     onClick={() => {
@@ -196,7 +196,7 @@ export const PublicLayout = () => {
                     }}
                     className="block w-full text-left py-2 text-red-600"
                   >
-                    Đăng xuất
+                    Logout
                   </button>
                 </>
               ) : (
@@ -206,14 +206,14 @@ export const PublicLayout = () => {
                     className="block py-2 text-gray-700 hover:text-blue-600"
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    Đăng nhập
+                    Login
                   </Link>
                   <Link
                     to="/register"
                     className="block py-2 text-blue-600 font-medium"
                     onClick={() => setShowMobileMenu(false)}
                   >
-                    Đăng ký
+                    Register
                   </Link>
                 </>
               )}
@@ -257,44 +257,41 @@ export const PublicLayout = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-lg font-bold mb-4">E-Commerce</h3>
-              <p className="text-gray-400 text-sm">
-                Nền tảng mua sắm trực tuyến uy tín hàng đầu Việt Nam
-              </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Về chúng tôi</h4>
+              <h4 className="font-semibold mb-4">About</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
                   <Link to="/about" className="hover:text-white">
-                    Giới thiệu
+                    About Us
                   </Link>
                 </li>
                 <li>
                   <Link to="/contact" className="hover:text-white">
-                    Liên hệ
+                    Contact Us    
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Chính sách</h4>
+              <h4 className="font-semibold mb-4">Policy</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li>
                   <Link to="/privacy" className="hover:text-white">
-                    Chính sách bảo mật
+                    Privacy Policy
                   </Link>
                 </li>
                 <li>
                   <Link to="/terms" className="hover:text-white">
-                    Điều khoản sử dụng
+                    Terms of Service
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Hỗ trợ</h4>
+              <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>Email: support@ecommerce.com</li>
+                <li>Email: n22dccn200@student.ptithcm.edu.vn</li>
                 <li>Hotline: 1900 1234</li>
               </ul>
             </div>

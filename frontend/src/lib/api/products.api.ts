@@ -77,6 +77,7 @@ export const productsApi = {
   // Get product by ID
   getProductById: async (id: string): Promise<Product> => {
     const response = await apiClient.get<Product>(`/products/${id}`);
+
     return response.data;
   },
 

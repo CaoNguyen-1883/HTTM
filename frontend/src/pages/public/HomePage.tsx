@@ -42,7 +42,7 @@ export const HomePage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 border-b">
+      {/*<section className="py-12 border-b">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex items-start gap-4">
@@ -80,7 +80,7 @@ export const HomePage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* AI-Powered Personalized Recommendations */}
       <div className="py-8 bg-gradient-to-br from-purple-50 to-blue-50">
@@ -89,17 +89,17 @@ export const HomePage = () => {
             <AIRecommendedProducts
               type="personalized"
               limit={10}
-              title="Dành Cho Bạn"
-              description="Gợi ý cá nhân hóa bằng AI - dựa trên lịch sử mua hàng của bạn"
-              showAIBadge={true}
+              title="For You"
+              description="Recommended based on your browsing history"
+              showAIBadge={false}
             />
           ) : (
             <AIRecommendedProducts
               type="popular"
               limit={10}
-              title="Sản Phẩm Phổ Biến"
-              description="Những sản phẩm được yêu thích nhất"
-              showAIBadge={true}
+              title="Popular Products"
+              description="Popular products across all categories"
+              showAIBadge={false}
             />
           )}
         </div>

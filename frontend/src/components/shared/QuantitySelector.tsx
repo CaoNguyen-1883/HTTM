@@ -67,7 +67,7 @@ export const QuantitySelector = ({
       </button>
 
       <span className="text-sm text-gray-500 ml-2">
-        Tối đa: {max}
+        Max: {max}
       </span>
     </div>
   );
