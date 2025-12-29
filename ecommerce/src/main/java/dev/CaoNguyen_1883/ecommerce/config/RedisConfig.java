@@ -94,22 +94,22 @@ public class RedisConfig {
      * Handles Java 8 date/time types and polymorphic types safely
      * NOTE: This is separate from HTTP JSON serialization
      */
-    @Bean(name = "redisObjectMapper")
-    public ObjectMapper redisObjectMapper(){
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-        // Enable default typing to preserve type information during serialization
-        // This prevents LinkedHashMap deserialization issues in Redis
-        mapper.activateDefaultTyping(
-            LaissezFaireSubTypeValidator.instance,
-            ObjectMapper.DefaultTyping.NON_FINAL,
-            JsonTypeInfo.As.PROPERTY
-        );
-
-        return mapper;
-    }
+//    @Bean(name = "redisObjectMapper")
+//    public ObjectMapper redisObjectMapper(){
+//        ObjectMapper mapper = new ObjectMapper();
+//        mapper.registerModule(new JavaTimeModule());
+//        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//
+//        // Enable default typing to preserve type information during serialization
+//        // This prevents LinkedHashMap deserialization issues in Redis
+//        mapper.activateDefaultTyping(
+//            LaissezFaireSubTypeValidator.instance,
+//            ObjectMapper.DefaultTyping.NON_FINAL,
+//            JsonTypeInfo.As.PROPERTY
+//        );
+//
+//        return mapper;
+//    }
 
     /**
      * Redis template for manual Redis operations
