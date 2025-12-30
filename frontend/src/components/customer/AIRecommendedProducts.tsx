@@ -2,8 +2,8 @@ import { Loader2, Sparkles, ShoppingBag, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
   usePersonalizedProducts,
-  useSimilarProductsEnriched,
-  usePopularProductsEnriched
+  // useSimilarProductsEnriched,
+  // usePopularProductsEnriched,
 } from "../../lib/hooks/useRecommendations";
 import { ProductSummary } from "../../lib/types";
 
@@ -27,13 +27,12 @@ interface AIRecommendedProductsProps {
  */
 export const AIRecommendedProducts = ({
   type,
-  productId,
+  // productId,
   limit = 10,
   title,
   description,
   showAIBadge = true,
 }: AIRecommendedProductsProps) => {
-
   // Use enriched hooks - they handle EVERYTHING:
   // 1. Fetch purchase history (for personalized)
   // 2. Call Python ML API (get IDs + scores)
@@ -42,45 +41,44 @@ export const AIRecommendedProducts = ({
   const {
     data: personalizedProducts,
     isLoading: isLoadingPersonalized,
-    error: personalizedError
+    error: personalizedError,
   } = usePersonalizedProducts(limit);
 
-  const {
-    data: similarProducts,
-    isLoading: isLoadingSimilar,
-    error: similarError
-  } = useSimilarProductsEnriched(productId || "", limit);
+  // const {
+  //   data: similarProducts,
+  //   isLoading: isLoadingSimilar,
+  //   error: similarError
+  // } = useSimilarProductsEnriched(productId || "", limit);
 
-  const {
-    data: popularProducts,
-    isLoading: isLoadingPopular,
-    error: popularError
-  } = usePopularProductsEnriched(limit);
+  // const {
+  //   data: popularProducts,
+  //   isLoading: isLoadingPopular,
+  //   error: popularError
+  // } = usePopularProductsEnriched(limit);
 
-  // Select data based on type
-  let products: ProductSummary[] | undefined;
-  let isLoading: boolean;
-  let error: any;
+  // // Select data based on type
+  // let products: ProductSummary[] | undefined;
+  // let isLoading: boolean;
+  // let error: any;
 
-  if (type === "personalized") {
-    products = personalizedProducts;
-    isLoading = isLoadingPersonalized;
-    error = personalizedError;
-  } else if (type === "similar") {
-    products = similarProducts;
-    isLoading = isLoadingSimilar;
-    error = similarError;
-  } else {
-    products = popularProducts;
-    isLoading = isLoadingPopular;
-    error = popularError;
-  }
+  const recommendationSection = personalizedProducts;
+  const products = recommendationSection?.products;
+  const isLoading = isLoadingPersonalized;
+  const error = personalizedError;
 
   // Default titles
   const defaultTitle =
-    type === "personalized" ? "Dành Cho Bạn" :
-    type === "similar" ? "Khách Hàng Cũng Mua" :
-    "Sản Phẩm Phổ Biến";
+    type === "personalized"
+      ? "Dành Cho Bạn"
+      : type === "similar"
+        ? "Khách Hàng Cũng Mua"
+        : "Sản Phẩm Phổ Biến";
+
+  // Use backend title/description if available
+  const displayTitle =
+    title || recommendationSection?.sectionTitle || defaultTitle;
+  const displayDescription =
+    description || recommendationSection?.sectionDescription;
 
   // Loading state
   if (isLoading) {
@@ -88,7 +86,7 @@ export const AIRecommendedProducts = ({
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           {showAIBadge && <Sparkles className="h-5 w-5 text-purple-500" />}
-          <h2 className="text-xl font-bold">{title || defaultTitle}</h2>
+          <h2 className="text-xl font-bold">{displayTitle}</h2>
           {showAIBadge && (
             <span className="ml-2 px-2 py-1 text-xs font-medium bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
@@ -96,8 +94,8 @@ export const AIRecommendedProducts = ({
             </span>
           )}
         </div>
-        {description && (
-          <p className="text-sm text-gray-600 mb-4">{description}</p>
+        {displayDescription && (
+          <p className="text-sm text-gray-600 mb-4">{displayDescription}</p>
         )}
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
@@ -132,9 +130,7 @@ export const AIRecommendedProducts = ({
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
           {showAIBadge && <Sparkles className="h-5 w-5 text-purple-500" />}
-          <h2 className="text-2xl font-bold">
-            {title || defaultTitle}
-          </h2>
+          <h2 className="text-2xl font-bold">{displayTitle}</h2>
           {showAIBadge && (
             <span className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full flex items-center gap-1">
               <Sparkles className="h-3 w-3" />
@@ -142,14 +138,12 @@ export const AIRecommendedProducts = ({
             </span>
           )}
         </div>
-        <div className="text-sm text-gray-500">
-          {products.length} Products
-        </div>
+        <div className="text-sm text-gray-500">{products.length} Products</div>
       </div>
 
       {/* Description */}
-      {description && (
-        <p className="text-sm text-gray-600 mb-6">{description}</p>
+      {displayDescription && (
+        <p className="text-sm text-gray-600 mb-6">{displayDescription}</p>
       )}
 
       {/* Product Grid */}
@@ -233,7 +227,8 @@ export const AIRecommendedProducts = ({
       {/* Footer Info */}
       <div className="mt-6 pt-4 border-t border-gray-200">
         <p className="text-xs text-center text-gray-500">
-          {type === "personalized" && "Recommended based on your purchase history"}
+          {type === "personalized" &&
+            "Recommended based on your purchase history"}
           {type === "similar" && "Products that were purchased together"}
           {type === "popular" && "Products that are most popular"}
         </p>

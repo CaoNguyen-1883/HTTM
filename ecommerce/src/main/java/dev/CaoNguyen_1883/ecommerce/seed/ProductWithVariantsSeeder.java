@@ -32,22 +32,22 @@ public class ProductWithVariantsSeeder implements Seeder {
     public void seed() {
         log.info("Starting product+variants seeding from CSV...");
 
-        // Check if we should skip
-        if (productRepository.count() > 150) {
+        // Check if we should skip - increased threshold to prevent re-importing old data
+        if (productRepository.count() > 200) {
             log.info(
-                "Products already seeded (count > 150), skipping CSV import"
+                "Products already seeded (count > 200), skipping CSV import"
             );
             return;
         }
 
         try {
-            // Load CSV from resources
+            // Load CSV from resources (relative path from resources folder)
             InputStream inputStream = getClass().getResourceAsStream(
-                "/data/products_with_variants.csv"
+                "/data/products_90_new_with_variants.csv"
             );
             if (inputStream == null) {
                 log.warn(
-                    "Could not find products_with_variants.csv in resources/data/"
+                    "Could not find products_90_new_with_variants.csv in resources/data/"
                 );
                 return;
             }

@@ -8,7 +8,9 @@ import { useAuthStore } from "../../lib/stores/authStore";
 export const HomePage = () => {
   const { data: recommendations, isLoading } = useHomePageRecommendations();
   const { user } = useAuthStore();
+  console.log(recommendations)
 
+  
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -142,7 +144,7 @@ export const HomePage = () => {
           {user ? (
             <AIRecommendedProducts
               type="personalized"
-              limit={10}
+              limit={20}
               title="For You"
               description="Recommended based on your browsing history"
               showAIBadge={false}
@@ -150,7 +152,7 @@ export const HomePage = () => {
           ) : (
             <AIRecommendedProducts
               type="popular"
-              limit={10}
+              limit={20}
               title="Popular Products"
               description="Popular products across all categories"
               showAIBadge={false}

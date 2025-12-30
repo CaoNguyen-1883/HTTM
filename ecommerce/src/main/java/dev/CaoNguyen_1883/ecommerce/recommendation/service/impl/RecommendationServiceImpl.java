@@ -10,6 +10,10 @@ import dev.CaoNguyen_1883.ecommerce.product.repository.ProductRepository;
 import dev.CaoNguyen_1883.ecommerce.recommendation.dto.RecommendationDto;
 import dev.CaoNguyen_1883.ecommerce.recommendation.dto.RecommendationType;
 import dev.CaoNguyen_1883.ecommerce.recommendation.service.IRecommendationService;
+import dev.CaoNguyen_1883.ecommerce.tracking.entity.UserProductView;
+import dev.CaoNguyen_1883.ecommerce.tracking.repository.UserProductViewRepository;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,9 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class RecommendationServiceImpl implements IRecommendationService {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final ProductMapper productMapper;
+    private final UserProductViewRepository userProductViewRepository;
 
     @Override
     public List<RecommendationDto> getHomePageRecommendations() {
@@ -57,17 +59,21 @@ public class RecommendationServiceImpl implements IRecommendationService {
         log.debug("Getting trending products, limit: {}", limit);
 
         Page<Product> products = productRepository.findTrendingProducts(
-                PageRequest.of(0, limit)
+            PageRequest.of(0, limit)
         );
 
         return RecommendationDto.builder()
-                .sectionTitle("Trending Products")
-                .sectionDescription("Popular products right now")
-                .type(RecommendationType.TRENDING)
-                .products(products.getContent().stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("Trending Products")
+            .sectionDescription("Popular products right now")
+            .type(RecommendationType.TRENDING)
+            .products(
+                products
+                    .getContent()
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     @Override
@@ -75,17 +81,21 @@ public class RecommendationServiceImpl implements IRecommendationService {
         log.debug("Getting best selling products, limit: {}", limit);
 
         Page<Product> products = productRepository.findBestSellingProducts(
-                PageRequest.of(0, limit)
+            PageRequest.of(0, limit)
         );
 
         return RecommendationDto.builder()
-                .sectionTitle("Best Sellers")
-                .sectionDescription("Our most popular products")
-                .type(RecommendationType.BEST_SELLERS)
-                .products(products.getContent().stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("Best Sellers")
+            .sectionDescription("Our most popular products")
+            .type(RecommendationType.BEST_SELLERS)
+            .products(
+                products
+                    .getContent()
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     @Override
@@ -93,17 +103,21 @@ public class RecommendationServiceImpl implements IRecommendationService {
         log.debug("Getting top rated products, limit: {}", limit);
 
         Page<Product> products = productRepository.findTopRatedProducts(
-                PageRequest.of(0, limit)
+            PageRequest.of(0, limit)
         );
 
         return RecommendationDto.builder()
-                .sectionTitle("Top Rated")
-                .sectionDescription("Highest rated by customers")
-                .type(RecommendationType.TOP_RATED)
-                .products(products.getContent().stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("Top Rated")
+            .sectionDescription("Highest rated by customers")
+            .type(RecommendationType.TOP_RATED)
+            .products(
+                products
+                    .getContent()
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     @Override
@@ -111,70 +125,116 @@ public class RecommendationServiceImpl implements IRecommendationService {
         log.debug("Getting new arrivals, limit: {}", limit);
 
         Page<Product> products = productRepository.findNewArrivals(
-                PageRequest.of(0, limit)
+            PageRequest.of(0, limit)
         );
 
         return RecommendationDto.builder()
-                .sectionTitle("New Arrivals")
-                .sectionDescription("Check out our latest products")
-                .type(RecommendationType.NEW_ARRIVALS)
-                .products(products.getContent().stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("New Arrivals")
+            .sectionDescription("Check out our latest products")
+            .type(RecommendationType.NEW_ARRIVALS)
+            .products(
+                products
+                    .getContent()
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     @Override
     public RecommendationDto getSimilarProducts(UUID productId, int limit) {
-        log.debug("Getting similar products for product: {}, limit: {}", productId, limit);
+        log.debug(
+            "Getting similar products for product: {}, limit: {}",
+            productId,
+            limit
+        );
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+        Product product = productRepository
+            .findById(productId)
+            .orElseThrow(() ->
+                new ResourceNotFoundException("Product", "id", productId)
+            );
 
         List<Product> similarProducts = productRepository.findSimilarProducts(
-                product.getCategory().getId(),
-                productId,
-                PageRequest.of(0, limit)
+            product.getCategory().getId(),
+            productId,
+            PageRequest.of(0, limit)
         );
 
         return RecommendationDto.builder()
-                .sectionTitle("Similar Products")
-                .sectionDescription("You might also like")
-                .type(RecommendationType.SIMILAR_PRODUCTS)
-                .products(similarProducts.stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("Similar Products")
+            .sectionDescription("You might also like")
+            .type(RecommendationType.SIMILAR_PRODUCTS)
+            .products(
+                similarProducts
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     @Override
-    public RecommendationDto getFrequentlyBoughtTogether(UUID productId, int limit) {
-        log.debug("Getting frequently bought together for product: {}, limit: {}", productId, limit);
+    public RecommendationDto getFrequentlyBoughtTogether(
+        UUID productId,
+        int limit
+    ) {
+        log.debug(
+            "Getting frequently bought together for product: {}, limit: {}",
+            productId,
+            limit
+        );
 
         List<Product> products = productRepository.findFrequentlyBoughtTogether(
-                productId,
-                PageRequest.of(0, limit)
+            productId,
+            PageRequest.of(0, limit)
         );
 
         // If no co-purchased products found, fall back to similar products
         if (products.isEmpty()) {
-            log.debug("No frequently bought together found, falling back to similar products");
+            log.debug(
+                "No frequently bought together found, falling back to similar products"
+            );
             return getSimilarProducts(productId, limit);
         }
 
         return RecommendationDto.builder()
-                .sectionTitle("Frequently Bought Together")
-                .sectionDescription("Customers also bought these items")
-                .type(RecommendationType.FREQUENTLY_BOUGHT_TOGETHER)
-                .products(products.stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("Frequently Bought Together")
+            .sectionDescription("Customers also bought these items")
+            .type(RecommendationType.FREQUENTLY_BOUGHT_TOGETHER)
+            .products(
+                products
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
+    }
+
+    public RecommendationDto getRecomendationsBasaeOnHistory(
+        UUID userId,
+        int limit
+    ) {
+        log.debug(
+            "Getting recommendations based on history for user: {}, limit: {}",
+            userId,
+            limit
+        );
+
+        return null;
     }
 
     @Override
-    public RecommendationDto getRecommendationsBasedOnCart(UUID userId, int limit) {
-        log.debug("Getting recommendations based on cart for user: {}, limit: {}", userId, limit);
+    public RecommendationDto getRecommendationsBasedOnCart(
+        UUID userId,
+        int limit
+    ) {
+        log.debug(
+            "Getting recommendations based on cart for user: {}, limit: {}",
+            userId,
+            limit
+        );
 
         Optional<Cart> cartOpt = cartRepository.findByUserIdWithItems(userId);
 
@@ -186,55 +246,161 @@ public class RecommendationServiceImpl implements IRecommendationService {
         Cart cart = cartOpt.get();
 
         // Get all unique product IDs from cart items
-        Set<UUID> cartProductIds = cart.getItems().stream()
-                .map(item -> item.getVariant().getProduct().getId())
-                .collect(Collectors.toSet());
+        Set<UUID> cartProductIds = cart
+            .getItems()
+            .stream()
+            .map(item -> item.getVariant().getProduct().getId())
+            .collect(Collectors.toSet());
 
         // Get all unique category IDs from cart products
-        Set<UUID> categoryIds = cart.getItems().stream()
-                .map(item -> item.getVariant().getProduct().getCategory().getId())
-                .collect(Collectors.toSet());
+        Set<UUID> categoryIds = cart
+            .getItems()
+            .stream()
+            .map(item -> item.getVariant().getProduct().getCategory().getId())
+            .collect(Collectors.toSet());
 
         // Find similar products from same categories (excluding cart products)
         List<Product> recommendations = new ArrayList<>();
 
         for (UUID categoryId : categoryIds) {
             Page<Product> categoryProducts = productRepository.findByCategoryId(
-                    categoryId,
-                    PageRequest.of(0, limit)
+                categoryId,
+                PageRequest.of(0, limit)
             );
 
             // Filter out products already in cart
-            categoryProducts.getContent().stream()
-                    .filter(p -> !cartProductIds.contains(p.getId()))
-                    .forEach(recommendations::add);
+            categoryProducts
+                .getContent()
+                .stream()
+                .filter(p -> !cartProductIds.contains(p.getId()))
+                .forEach(recommendations::add);
         }
 
         // Remove duplicates and limit
-        List<Product> uniqueRecommendations = recommendations.stream()
-                .distinct()
-                .limit(limit)
-                .collect(Collectors.toList());
+        List<Product> uniqueRecommendations = recommendations
+            .stream()
+            .distinct()
+            .limit(limit)
+            .collect(Collectors.toList());
 
         // If not enough recommendations, add trending products
         if (uniqueRecommendations.size() < limit) {
             Page<Product> trending = productRepository.findTrendingProducts(
-                    PageRequest.of(0, limit - uniqueRecommendations.size())
+                PageRequest.of(0, limit - uniqueRecommendations.size())
             );
 
-            trending.getContent().stream()
-                    .filter(p -> !cartProductIds.contains(p.getId()))
-                    .filter(p -> !uniqueRecommendations.contains(p))
-                    .forEach(uniqueRecommendations::add);
+            trending
+                .getContent()
+                .stream()
+                .filter(p -> !cartProductIds.contains(p.getId()))
+                .filter(p -> !uniqueRecommendations.contains(p))
+                .forEach(uniqueRecommendations::add);
         }
 
         return RecommendationDto.builder()
-                .sectionTitle("Recommended For You")
-                .sectionDescription("Based on items in your cart")
-                .type(RecommendationType.FOR_YOU)
-                .products(uniqueRecommendations.stream()
-                        .map(productMapper::toSummaryDto)
-                        .collect(Collectors.toList()))
-                .build();
+            .sectionTitle("Recommended For You")
+            .sectionDescription("Based on items in your cart")
+            .type(RecommendationType.FOR_YOU)
+            .products(
+                uniqueRecommendations
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
+    }
+
+    @Override
+    public RecommendationDto getRecommendationsBasedOnViewHistory(
+        UUID userId,
+        int limit
+    ) {
+        log.debug(
+            "Getting recommendations based on view history for user: {}, limit: {}",
+            userId,
+            limit
+        );
+
+        // Get user's recent views (last 30 days)
+        List<UserProductView> recentViews =
+            userProductViewRepository.findRecentViewsByUser(
+                userId,
+                java.time.LocalDateTime.now().minusDays(30)
+            );
+
+        if (recentViews.isEmpty()) {
+            log.debug("No view history found, returning trending products");
+            return getTrendingProducts(limit);
+        }
+
+        // Extract viewed product IDs
+        Set<UUID> viewedProductIds = recentViews
+            .stream()
+            .map(UserProductView::getProductId)
+            .collect(Collectors.toSet());
+
+        // Get categories from viewed products
+        List<Product> viewedProducts = productRepository.findAllById(
+            viewedProductIds
+        );
+        Set<UUID> categoryIds = viewedProducts
+            .stream()
+            .map(p -> p.getCategory().getId())
+            .collect(Collectors.toSet());
+
+        log.debug(
+            "Found {} viewed products in {} categories",
+            viewedProductIds.size(),
+            categoryIds.size()
+        );
+
+        // Find similar products from same categories (excluding already viewed)
+        List<Product> recommendations = new ArrayList<>();
+
+        for (UUID categoryId : categoryIds) {
+            Page<Product> categoryProducts = productRepository.findByCategoryId(
+                categoryId,
+                PageRequest.of(0, limit)
+            );
+
+            categoryProducts
+                .getContent()
+                .stream()
+                .filter(p -> !viewedProductIds.contains(p.getId()))
+                .forEach(recommendations::add);
+        }
+
+        // Remove duplicates and limit
+        List<Product> uniqueRecommendations = recommendations
+            .stream()
+            .distinct()
+            .limit(limit)
+            .collect(Collectors.toList());
+
+        // If not enough, add trending products
+        if (uniqueRecommendations.size() < limit) {
+            Page<Product> trending = productRepository.findTrendingProducts(
+                PageRequest.of(0, limit - uniqueRecommendations.size())
+            );
+
+            trending
+                .getContent()
+                .stream()
+                .filter(p -> !viewedProductIds.contains(p.getId()))
+                .filter(p -> !uniqueRecommendations.contains(p))
+                .forEach(uniqueRecommendations::add);
+        }
+
+        return RecommendationDto.builder()
+            .sectionTitle("Based On Your Browsing")
+            .sectionDescription("Products similar to what you've viewed")
+            .type(RecommendationType.FOR_YOU)
+            .products(
+                uniqueRecommendations
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 }

@@ -9,12 +9,14 @@ export interface RecommendationSection {
   products: ProductSummary[];
 }
 
-// Get all homepage recommendations
+// Get all homepage recommendations (Trending, Best Sellers, New Arrivals, Top Rated)
+// NOTE: This does NOT include "For You" section - use useRecommendationsForYou for that
 export const useHomePageRecommendations = () => {
   return useQuery<RecommendationSection[]>({
     queryKey: ["recommendations", "homepage"],
     queryFn: async () => {
       const response = await apiClient.get("/recommendations/homepage");
+
       return response.data;
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -26,7 +28,9 @@ export const useTrendingProducts = (limit: number = 8) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "trending", limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/trending?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/trending?limit=${limit}`,
+      );
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
@@ -38,7 +42,9 @@ export const useBestSellers = (limit: number = 8) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "best-sellers", limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/best-sellers?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/best-sellers?limit=${limit}`,
+      );
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
@@ -50,7 +56,9 @@ export const useTopRated = (limit: number = 8) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "top-rated", limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/top-rated?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/top-rated?limit=${limit}`,
+      );
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
@@ -62,7 +70,9 @@ export const useNewArrivals = (limit: number = 8) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "new-arrivals", limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/new-arrivals?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/new-arrivals?limit=${limit}`,
+      );
       return response.data;
     },
     staleTime: 5 * 60 * 1000,
@@ -74,7 +84,9 @@ export const useSimilarProducts = (productId: string, limit: number = 8) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "similar", productId, limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/similar/${productId}?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/similar/${productId}?limit=${limit}`,
+      );
       return response.data;
     },
     enabled: !!productId,
@@ -83,11 +95,16 @@ export const useSimilarProducts = (productId: string, limit: number = 8) => {
 };
 
 // Get frequently bought together
-export const useFrequentlyBoughtTogether = (productId: string, limit: number = 5) => {
+export const useFrequentlyBoughtTogether = (
+  productId: string,
+  limit: number = 5,
+) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "bought-together", productId, limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/bought-together/${productId}?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/bought-together/${productId}?limit=${limit}`,
+      );
       return response.data;
     },
     enabled: !!productId,
@@ -100,7 +117,9 @@ export const useRecommendationsForYou = (limit: number = 8) => {
   return useQuery<RecommendationSection>({
     queryKey: ["recommendations", "for-you", limit],
     queryFn: async () => {
-      const response = await apiClient.get(`/recommendations/for-you?limit=${limit}`);
+      const response = await apiClient.get(
+        `/recommendations/for-you?limit=${limit}`,
+      );
       return response.data;
     },
     staleTime: 2 * 60 * 1000, // Shorter cache for personalized
@@ -122,7 +141,7 @@ import {
  */
 export const useMLRecommendationsForYou = (
   userId: string | undefined,
-  limit: number = 20
+  limit: number = 20,
 ) => {
   return useQuery<RecommendationsResponse>({
     queryKey: ["ml-recommendations", "user", userId, limit],
@@ -143,7 +162,7 @@ export const useMLRecommendationsForYou = (
  */
 export const useMLSimilarProducts = (
   productId: string | undefined,
-  limit: number = 10
+  limit: number = 10,
 ) => {
   return useQuery<RecommendationsResponse>({
     queryKey: ["ml-recommendations", "similar", productId, limit],
@@ -158,58 +177,26 @@ export const useMLSimilarProducts = (
 // These hooks return full product details (enriched with Spring Boot data)
 
 import { enrichedRecommendationsApi } from "../api/recommendations.helper";
-import { useAuthStore } from "../stores/authStore";
-import { ordersApi } from "../api/orders.api";
 
 /**
  * Get personalized recommendations với FULL product details
- * Automatically fetches purchase history and enriches with product data
+ * Backend handles user authentication and ML API calls automatically
  * Use case: Homepage "Dành Cho Bạn" section
  */
 export const usePersonalizedProducts = (limit: number = 20) => {
-  const { user } = useAuthStore();
-
   return useQuery({
-    queryKey: ['personalizedProducts', user?.id, limit],
+    queryKey: ["personalizedProducts", limit],
     queryFn: async () => {
-      if (!user) {
-        // Guest user → show popular products
-        return enrichedRecommendationsApi.getPopularProductsWithDetails(limit);
-      }
-
-      try {
-        // Get purchase history (customer gets their own orders by default)
-        const ordersResponse = await ordersApi.getOrders();
-        const productIds = new Set<string>();
-
-        ordersResponse.content.forEach((order: any) => {
-          order.items?.forEach((item: any) => {
-            if (item.productId) {
-              productIds.add(item.productId);
-            }
-          });
-        });
-
-        const purchaseHistory = Array.from(productIds);
-
-        if (purchaseHistory.length === 0) {
-          // New user → show popular products
-          return enrichedRecommendationsApi.getPopularProductsWithDetails(limit);
-        }
-
-        // Get AI recommendations với full details
-        return enrichedRecommendationsApi.getPersonalizedProducts(
-          user.id,
-          purchaseHistory,
-          limit
-        );
-      } catch (error) {
-        console.error('Error in usePersonalizedProducts:', error);
-        return enrichedRecommendationsApi.getPopularProductsWithDetails(limit);
-      }
+      // Call /recommendations/for-you - backend handles everything:
+      // - Authenticated users: ML API based on cart/purchase history
+      // - Guest users: Trending products
+      const response = await apiClient.get(
+        `/recommendations/for-you?limit=${limit}`,
+      );
+      return response.data;
     },
     enabled: true,
-    staleTime: 5 * 60 * 1000, // Cache 5 minutes
+    staleTime: 2 * 60 * 1000, // Cache 2 minutes
     retry: 1,
   });
 };
@@ -218,10 +205,17 @@ export const usePersonalizedProducts = (limit: number = 20) => {
  * Get similar products với FULL product details
  * Use case: Product Detail Page "Khách Hàng Cũng Mua"
  */
-export const useSimilarProductsEnriched = (productId: string, limit: number = 10) => {
+export const useSimilarProductsEnriched = (
+  productId: string,
+  limit: number = 10,
+) => {
   return useQuery({
-    queryKey: ['similarProductsEnriched', productId, limit],
-    queryFn: () => enrichedRecommendationsApi.getSimilarProductsWithDetails(productId, limit),
+    queryKey: ["similarProductsEnriched", productId, limit],
+    queryFn: () =>
+      enrichedRecommendationsApi.getSimilarProductsWithDetails(
+        productId,
+        limit,
+      ),
     enabled: !!productId,
     staleTime: 10 * 60 * 1000, // Cache 10 minutes
     retry: 1,
@@ -234,8 +228,9 @@ export const useSimilarProductsEnriched = (productId: string, limit: number = 10
  */
 export const usePopularProductsEnriched = (limit: number = 20) => {
   return useQuery({
-    queryKey: ['popularProductsEnriched', limit],
-    queryFn: () => enrichedRecommendationsApi.getPopularProductsWithDetails(limit),
+    queryKey: ["popularProductsEnriched", limit],
+    queryFn: () =>
+      enrichedRecommendationsApi.getPopularProductsWithDetails(limit),
     staleTime: 30 * 60 * 1000, // Cache 30 minutes
     retry: 2,
   });

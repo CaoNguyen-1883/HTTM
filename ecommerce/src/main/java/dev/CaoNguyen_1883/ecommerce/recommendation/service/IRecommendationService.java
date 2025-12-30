@@ -1,12 +1,10 @@
 package dev.CaoNguyen_1883.ecommerce.recommendation.service;
 
 import dev.CaoNguyen_1883.ecommerce.recommendation.dto.RecommendationDto;
-
 import java.util.List;
 import java.util.UUID;
 
 public interface IRecommendationService {
-
     /**
      * Get all recommendations for homepage
      */
@@ -46,4 +44,12 @@ public interface IRecommendationService {
      * Get personalized recommendations based on user's cart
      */
     RecommendationDto getRecommendationsBasedOnCart(UUID userId, int limit);
+
+    /**
+     * Get personalized recommendations based on user's view history
+     */
+    RecommendationDto getRecommendationsBasedOnViewHistory(
+        UUID userId,
+        int limit
+    );
 }

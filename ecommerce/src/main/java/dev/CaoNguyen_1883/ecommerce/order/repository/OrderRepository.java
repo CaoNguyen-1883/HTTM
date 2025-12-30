@@ -103,4 +103,7 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
             "WHERE o.user.id = :userId " +
             "ORDER BY o.createdAt DESC")
     List<Order> findLatestOrdersByUserId(@Param("userId") UUID userId, Pageable pageable);
+
+
+    List<Order> findByUserIdOrderByCreatedAtDesc(UUID userId);
 }

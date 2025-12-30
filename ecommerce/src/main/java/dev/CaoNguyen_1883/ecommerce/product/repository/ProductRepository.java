@@ -4,6 +4,7 @@ import dev.CaoNguyen_1883.ecommerce.product.entity.Product;
 import dev.CaoNguyen_1883.ecommerce.product.entity.ProductStatus;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -252,4 +253,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             "AND p.status = 'APPROVED' AND p.isActive = true"
     )
     List<Product> findByIdIn(@Param("productIds") List<UUID> productIds);
+
+
 }

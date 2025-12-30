@@ -36,14 +36,14 @@ public class ProductSeeder implements Seeder {
     public void seed() {
         log.info("Starting product seeding from CSV...");
 
-        if (productRepository.count() > 30) {
+        if (productRepository.count() > 200) {
             log.info("Products already seeded (count > 30), skipping CSV import");
             return;
         }
 
         try {
             // Load CSV from resources
-            InputStream inputStream = getClass().getResourceAsStream("D:/work-space/HTTM;/data/products_120_new.csv");
+            InputStream inputStream = getClass().getResourceAsStream("D:/work-space/HTTM/data/products_120_new.csv");
             if (inputStream == null) {
                 log.error("Could not find products_120_new.csv in resources/data/");
                 return;

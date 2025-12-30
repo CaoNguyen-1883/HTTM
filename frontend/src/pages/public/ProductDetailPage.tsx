@@ -1,10 +1,21 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Star, ShoppingCart, Heart, Share2, ChevronRight, MessageCircle } from "lucide-react";
+import {
+  Star,
+  ShoppingCart,
+  Heart,
+  Share2,
+  ChevronRight,
+  MessageCircle,
+} from "lucide-react";
 import { useProduct } from "../../lib/hooks/useProducts";
 import { useCartStore } from "../../lib/stores/cartStore";
 import { useAuthStore } from "../../lib/stores/authStore";
-import { useProductReviews, useProductRatingSummary, useCreateReview } from "../../lib/hooks";
+import {
+  useProductReviews,
+  useProductRatingSummary,
+  useCreateReview,
+} from "../../lib/hooks";
 import { ImageGallery } from "../../components/shared/ImageGallery";
 import { VariantSelector } from "../../components/shared/VariantSelector";
 import { QuantitySelector } from "../../components/shared/QuantitySelector";
@@ -23,21 +34,20 @@ export const ProductDetailPage = () => {
   const { addToCart, isLoading: isAddingToCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
 
-
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    null
+    null,
   );
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState<"description" | "specs" | "reviews">(
-    "description"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "description" | "specs" | "reviews"
+  >("description");
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewPage, setReviewPage] = useState(0);
 
   // Reviews data
   const { data: reviewsData, isLoading: reviewsLoading } = useProductReviews(
     id!,
-    { page: reviewPage, size: 10 }
+    { page: reviewPage, size: 10 },
   );
   const { data: ratingSummary } = useProductRatingSummary(id!);
   const createReviewMutation = useCreateReview();
@@ -82,8 +92,8 @@ export const ProductDetailPage = () => {
     return product?.basePrice || 0;
   };
 
-  const maxQuantity = selectedVariant?.availableStock || selectedVariant?.stock || 0;
-
+  const maxQuantity =
+    selectedVariant?.availableStock || selectedVariant?.stock || 0;
 
   if (isLoading) {
     return (
@@ -173,13 +183,9 @@ export const ProductDetailPage = () => {
               </span>
             </div>
             <div className="h-4 w-px bg-gray-300"></div>
-            <span className="text-gray-600">
-              Sold: {product.purchaseCount}
-            </span>
+            <span className="text-gray-600">Sold: {product.purchaseCount}</span>
             <div className="h-4 w-px bg-gray-300"></div>
-            <span className="text-gray-600">
-              Views: {product.viewCount}
-            </span>
+            <span className="text-gray-600">Views: {product.viewCount}</span>
           </div>
 
           {/* Price */}
@@ -223,6 +229,23 @@ export const ProductDetailPage = () => {
               </Link>
             </div>
           </div>
+
+          {/* Tags */}
+          {product.tags && product.tags.length > 0 && (
+            <div>
+              <span className="text-sm text-gray-500 block mb-2">Tags:</span>
+              <div className="flex flex-wrap gap-2">
+                {product.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Variant Selector */}
           {product.variants && product.variants.length > 0 && (
@@ -332,9 +355,7 @@ export const ProductDetailPage = () => {
         <div className="py-8">
           {activeTab === "description" && (
             <div className="prose max-w-none">
-              <div
-                dangerouslySetInnerHTML={{ __html: product.description }}
-              />
+              <div dangerouslySetInnerHTML={{ __html: product.description }} />
             </div>
           )}
 
@@ -348,7 +369,9 @@ export const ProductDetailPage = () => {
                   </tr>
                   <tr className="border-b">
                     <td className="py-3 text-gray-600">Category</td>
-                    <td className="py-3 font-medium">{product.category.name}</td>
+                    <td className="py-3 font-medium">
+                      {product.category.name}
+                    </td>
                   </tr>
                   {product.variants && product.variants.length > 0 && (
                     <tr className="border-b">
@@ -399,7 +422,11 @@ export const ProductDetailPage = () => {
                       Sign in to write a review
                     </p>
                     <button
-                      onClick={() => navigate("/login", { state: { from: `/products/${id}` } })}
+                      onClick={() =>
+                        navigate("/login", {
+                          state: { from: `/products/${id}` },
+                        })
+                      }
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition"
                     >
                       Sign In
@@ -417,11 +444,18 @@ export const ProductDetailPage = () => {
                       productId={id!}
                       onSubmit={async (data) => {
                         try {
-                          await createReviewMutation.mutateAsync(data as CreateReviewRequest);
+                          await createReviewMutation.mutateAsync(
+                            data as CreateReviewRequest,
+                          );
                           setShowReviewForm(false);
-                          alert("Review submitted successfully! It will be visible after approval.");
+                          alert(
+                            "Review submitted successfully! It will be visible after approval.",
+                          );
                         } catch (error: any) {
-                          alert(error.response?.data?.message || "Failed to submit review");
+                          alert(
+                            error.response?.data?.message ||
+                              "Failed to submit review",
+                          );
                         }
                       }}
                       onCancel={() => setShowReviewForm(false)}
