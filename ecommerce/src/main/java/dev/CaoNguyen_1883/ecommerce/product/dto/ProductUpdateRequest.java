@@ -4,16 +4,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
-import lombok.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ProductUpdateRequest {
+
     @Size(max = 200)
     @Schema(description = "Product name")
     private String name;
@@ -39,6 +40,14 @@ public class ProductUpdateRequest {
     private List<String> tags;
 
     @Valid
-    @Schema(description = "Product images (replaces all existing images if provided)")
+    @Schema(
+        description = "Product images (replaces all existing images if provided)"
+    )
     private List<ProductImageRequest> images;
+
+    @Valid
+    @Schema(
+        description = "Product variants with images (only updates variant images, other variant properties are ignored)"
+    )
+    private List<ProductVariantUpdateRequest> variants;
 }

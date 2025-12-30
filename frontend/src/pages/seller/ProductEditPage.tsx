@@ -32,6 +32,11 @@ export const SellerProductEditPage = () => {
   // Product Images
   const [productImages, setProductImages] = useState<UploadedImage[]>([]);
 
+  // Variant Images - map variant ID to images
+  const [variantImages, setVariantImages] = useState<
+    Record<string, UploadedImage[]>
+  >({});
+
   // Load product data
   useEffect(() => {
     if (product) {
@@ -54,6 +59,24 @@ export const SellerProductEditPage = () => {
           }),
         );
         setProductImages(loadedImages);
+      }
+
+      // Load existing variant images
+      if (product.variants && product.variants.length > 0) {
+        const variantImagesMap: Record<string, UploadedImage[]> = {};
+        product.variants.forEach((variant: any) => {
+          if (variant.images && variant.images.length > 0) {
+            variantImagesMap[variant.id] = variant.images.map((img: any) => ({
+              url: img.imageUrl,
+              isPrimary: img.isPrimary || false,
+              displayOrder: img.displayOrder || 0,
+              altText: img.altText || "",
+            }));
+          } else {
+            variantImagesMap[variant.id] = [];
+          }
+        });
+        setVariantImages(variantImagesMap);
       }
     }
   }, [product]);
@@ -97,6 +120,15 @@ export const SellerProductEditPage = () => {
               displayOrder: img.displayOrder,
             }))
           : undefined,
+      variants: product.variants
+        .filter(
+          (variant) =>
+            variantImages[variant.id] && variantImages[variant.id].length > 0,
+        )
+        .map((variant) => ({
+          variantId: variant.id,
+          imageUrls: variantImages[variant.id].map((img) => img.url),
+        })),
     };
 
     try {
@@ -321,24 +353,24 @@ export const SellerProductEditPage = () => {
           </div>
         </div>
 
-        {/* Current Variants (Read-only) */}
+        {/* Product Variants */}
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
-            Current Variants
+            Product Variants
           </h2>
           <p className="text-sm text-gray-600 mb-4">
-            Variant editing is not supported yet. Contact support if you need to
-            modify variants.
+            You can update variant images. Other variant properties (name,
+            price, stock) cannot be edited yet.
           </p>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {product.variants.map((variant) => (
               <div
                 key={variant.id}
-                className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                className="border border-gray-200 rounded-lg p-4"
               >
-                <div className="flex items-center justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <h4 className="font-semibold text-gray-900">
+                    <h4 className="font-semibold text-gray-900 mb-1">
                       {variant.name}
                     </h4>
                     <p className="text-sm text-gray-600">SKU: {variant.sku}</p>
@@ -353,6 +385,21 @@ export const SellerProductEditPage = () => {
                       Stock: {variant.stock || 0}
                     </p>
                   </div>
+                </div>
+
+                {/* Variant Images */}
+                <div className="mt-4">
+                  <ImageUpload
+                    images={variantImages[variant.id] || []}
+                    onImagesChange={(images) => {
+                      setVariantImages((prev) => ({
+                        ...prev,
+                        [variant.id]: images,
+                      }));
+                    }}
+                    maxImages={5}
+                    label={`Images for ${variant.name}`}
+                  />
                 </div>
               </div>
             ))}

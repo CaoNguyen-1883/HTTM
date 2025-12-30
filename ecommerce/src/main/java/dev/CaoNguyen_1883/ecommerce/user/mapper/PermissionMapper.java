@@ -1,43 +1,52 @@
 package dev.CaoNguyen_1883.ecommerce.user.mapper;
 
-
 import dev.CaoNguyen_1883.ecommerce.user.dto.PermissionDTO;
 import dev.CaoNguyen_1883.ecommerce.user.dto.PermissionRequest;
 import dev.CaoNguyen_1883.ecommerce.user.entity.Permission;
-import org.mapstruct.*;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Set;
+@Component
+public class PermissionMapper {
 
-@Mapper(componentModel = "spring")
-public interface PermissionMapper {
-    // Entity -> DTO
-    PermissionDTO toDTO(Permission permission);
+    public PermissionDTO toDTO(Permission permission) {
+        if (permission == null) {
+            return null;
+        }
 
-    // Entity List -> DTO List
-    List<PermissionDTO> toDTOList(List<Permission> permissions);
+        return PermissionDTO.builder()
+            .id(permission.getId())
+            .name(permission.getName())
+            .description(permission.getDescription())
+            .createdAt(permission.getCreatedAt())
+            .createdBy(permission.getCreatedBy())
+            .build();
+    }
 
-    // Entity Set -> DTO Set
-    Set<PermissionDTO> toDTOSet(Set<Permission> permissions);
+    public Permission toEntity(PermissionRequest request) {
+        if (request == null) {
+            return null;
+        }
 
-    // Request -> Entity
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
-    Permission toEntity(PermissionRequest request);
+        return Permission.builder()
+            .name(request.getName())
+            .description(request.getDescription())
+            .isActive(true)
+            .build();
+    }
 
-    // Update existing entity from request
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
-    void updateEntityFromRequest(PermissionRequest request, @MappingTarget Permission permission);
+    public void updateEntityFromRequest(
+        PermissionRequest request,
+        Permission permission
+    ) {
+        if (permission == null || request == null) {
+            return;
+        }
+
+        if (request.getName() != null) {
+            permission.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            permission.setDescription(request.getDescription());
+        }
+    }
 }
