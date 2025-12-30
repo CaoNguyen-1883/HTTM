@@ -212,19 +212,6 @@ public class RecommendationServiceImpl implements IRecommendationService {
             .build();
     }
 
-    public RecommendationDto getRecomendationsBasaeOnHistory(
-        UUID userId,
-        int limit
-    ) {
-        log.debug(
-            "Getting recommendations based on history for user: {}, limit: {}",
-            userId,
-            limit
-        );
-
-        return null;
-    }
-
     @Override
     public RecommendationDto getRecommendationsBasedOnCart(
         UUID userId,
@@ -394,6 +381,130 @@ public class RecommendationServiceImpl implements IRecommendationService {
         return RecommendationDto.builder()
             .sectionTitle("Based On Your Browsing")
             .sectionDescription("Products similar to what you've viewed")
+            .type(RecommendationType.FOR_YOU)
+            .products(
+                uniqueRecommendations
+                    .stream()
+                    .map(productMapper::toSummaryDto)
+                    .collect(Collectors.toList())
+            )
+            .build();
+    }
+
+    @Override
+    public RecommendationDto getPersonalizedRecommendations(
+        UUID userId,
+        int limit
+    ) {
+        log.debug(
+            "Getting personalized recommendations (view + cart) for user: {}, limit: {}",
+            userId,
+            limit
+        );
+
+        // Collect product IDs with weighting: 80% view history, 20% cart
+        Set<UUID> interactedProductIds = new LinkedHashSet<>();
+
+        // 1. Get from view history (last 30 days) - 80% weight, take top 20
+        List<UserProductView> recentViews =
+            userProductViewRepository.findRecentViewsByUser(
+                userId,
+                java.time.LocalDateTime.now().minusDays(30)
+            );
+        recentViews
+            .stream()
+            .limit(20) // Limit to 20 most recent views (80% weight)
+            .map(UserProductView::getProductId)
+            .forEach(interactedProductIds::add);
+
+        log.debug(
+            "Found {} viewed products (using top 20)",
+            recentViews.size()
+        );
+
+        // 2. Get from cart - 20% weight, take top 5
+        Optional<Cart> cartOpt = cartRepository.findByUserIdWithItems(userId);
+        if (cartOpt.isPresent() && !cartOpt.get().getItems().isEmpty()) {
+            Cart cart = cartOpt.get();
+            cart
+                .getItems()
+                .stream()
+                .limit(5) // Limit to 5 cart items (20% weight)
+                .map(item -> item.getVariant().getProduct().getId())
+                .forEach(interactedProductIds::add);
+            log.debug(
+                "Added {} cart products (using top 5)",
+                Math.min(5, cart.getItems().size())
+            );
+        }
+
+        // If no interaction data, return trending
+        if (interactedProductIds.isEmpty()) {
+            log.debug("No interactions found, returning trending");
+            return getTrendingProducts(limit);
+        }
+
+        log.debug(
+            "Total {} unique interacted products",
+            interactedProductIds.size()
+        );
+
+        // Get categories from all interacted products
+        List<Product> interactedProducts = productRepository.findAllById(
+            interactedProductIds
+        );
+        Set<UUID> categoryIds = interactedProducts
+            .stream()
+            .map(p -> p.getCategory().getId())
+            .collect(Collectors.toSet());
+
+        log.debug("Found {} categories", categoryIds.size());
+
+        // Find similar products from same categories
+        List<Product> recommendations = new ArrayList<>();
+
+        for (UUID categoryId : categoryIds) {
+            Page<Product> categoryProducts = productRepository.findByCategoryId(
+                categoryId,
+                PageRequest.of(0, limit)
+            );
+
+            categoryProducts
+                .getContent()
+                .stream()
+                .filter(p -> !interactedProductIds.contains(p.getId()))
+                .forEach(recommendations::add);
+        }
+
+        // Remove duplicates and limit
+        List<Product> uniqueRecommendations = recommendations
+            .stream()
+            .distinct()
+            .limit(limit)
+            .collect(Collectors.toList());
+
+        // Add trending if not enough
+        if (uniqueRecommendations.size() < limit) {
+            Page<Product> trending = productRepository.findTrendingProducts(
+                PageRequest.of(0, limit - uniqueRecommendations.size())
+            );
+
+            trending
+                .getContent()
+                .stream()
+                .filter(p -> !interactedProductIds.contains(p.getId()))
+                .filter(p -> !uniqueRecommendations.contains(p))
+                .forEach(uniqueRecommendations::add);
+        }
+
+        log.info(
+            "Returning {} personalized recommendations",
+            uniqueRecommendations.size()
+        );
+
+        return RecommendationDto.builder()
+            .sectionTitle("Recommended For You")
+            .sectionDescription("Based on your browsing and shopping activity")
             .type(RecommendationType.FOR_YOU)
             .products(
                 uniqueRecommendations

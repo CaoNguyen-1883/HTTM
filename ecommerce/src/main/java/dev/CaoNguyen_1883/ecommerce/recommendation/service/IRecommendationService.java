@@ -1,6 +1,9 @@
 package dev.CaoNguyen_1883.ecommerce.recommendation.service;
 
+
+
 import dev.CaoNguyen_1883.ecommerce.recommendation.dto.RecommendationDto;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -52,4 +55,10 @@ public interface IRecommendationService {
         UUID userId,
         int limit
     );
+
+    /**
+     * Get personalized recommendations combining view history and cart
+     * Most comprehensive recommendation method
+     */
+    RecommendationDto getPersonalizedRecommendations(UUID userId, int limit);
 }

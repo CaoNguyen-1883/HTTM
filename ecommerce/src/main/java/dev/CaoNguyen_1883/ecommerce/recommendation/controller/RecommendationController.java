@@ -1,5 +1,7 @@
 package dev.CaoNguyen_1883.ecommerce.recommendation.controller;
 
+
+
 import dev.CaoNguyen_1883.ecommerce.auth.security.CustomUserDetails;
 import dev.CaoNguyen_1883.ecommerce.common.response.ApiResponse;
 import dev.CaoNguyen_1883.ecommerce.recommendation.dto.RecommendationDto;
@@ -185,7 +187,7 @@ public class RecommendationController {
             CustomUserDetails userDetails =
                 (CustomUserDetails) authentication.getPrincipal();
             RecommendationDto recommendation =
-                recommendationService.getRecommendationsBasedOnCart(
+                recommendationService.getPersonalizedRecommendations(
                     userDetails.getId(),
                     limit
                 );

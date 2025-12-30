@@ -126,8 +126,7 @@ export const useRecommendationsForYou = (limit: number = 8) => {
   });
 };
 
-// ==================== ML-BASED RECOMMENDATIONS ====================
-// These hooks use the ML API (Item-Based Collaborative Filtering)
+
 
 import {
   getSimilarProducts as getMLSimilarProducts,
@@ -173,10 +172,6 @@ export const useMLSimilarProducts = (
   });
 };
 
-// ==================== ENRICHED ML RECOMMENDATIONS ====================
-// These hooks return full product details (enriched with Spring Boot data)
-
-import { enrichedRecommendationsApi } from "../api/recommendations.helper";
 
 /**
  * Get personalized recommendations với FULL product details
@@ -198,40 +193,5 @@ export const usePersonalizedProducts = (limit: number = 20) => {
     enabled: true,
     staleTime: 2 * 60 * 1000, // Cache 2 minutes
     retry: 1,
-  });
-};
-
-/**
- * Get similar products với FULL product details
- * Use case: Product Detail Page "Khách Hàng Cũng Mua"
- */
-export const useSimilarProductsEnriched = (
-  productId: string,
-  limit: number = 10,
-) => {
-  return useQuery({
-    queryKey: ["similarProductsEnriched", productId, limit],
-    queryFn: () =>
-      enrichedRecommendationsApi.getSimilarProductsWithDetails(
-        productId,
-        limit,
-      ),
-    enabled: !!productId,
-    staleTime: 10 * 60 * 1000, // Cache 10 minutes
-    retry: 1,
-  });
-};
-
-/**
- * Get popular products với FULL product details
- * Use case: Homepage "Best Sellers", Guest Users
- */
-export const usePopularProductsEnriched = (limit: number = 20) => {
-  return useQuery({
-    queryKey: ["popularProductsEnriched", limit],
-    queryFn: () =>
-      enrichedRecommendationsApi.getPopularProductsWithDetails(limit),
-    staleTime: 30 * 60 * 1000, // Cache 30 minutes
-    retry: 2,
   });
 };
