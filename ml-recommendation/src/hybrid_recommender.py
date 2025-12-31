@@ -212,7 +212,9 @@ class HybridRecommender:
         for product_id in all_products:
             cf_score = cf_scores_norm.get(product_id, 0)
             cb_score = cb_scores_norm.get(product_id, 0)
-            hybrid_scores[product_id] = (cf_score * 0.7) + (cb_score * 0.3)
+            # Adjusted weights: 40% CF + 60% CB (more content-based)
+            log.info(f"CF score: {cf_score}, CB score: {cb_score}")
+            hybrid_scores[product_id] = (cf_score * 0.1) + (cb_score * 0.9)
 
         # Sort and return top K
         top_items = sorted(hybrid_scores.items(), key=lambda x: x[1], reverse=True)[
