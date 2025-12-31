@@ -25,7 +25,7 @@ import { ReviewForm } from "../../components/shared/ReviewForm";
 import { MLRecommendedProducts } from "../../components/customer/MLRecommendedProducts";
 import { Button } from "../../components/ui/Button";
 import { ProductVariant, CreateReviewRequest } from "../../lib/types";
-import { formatCurrency } from "../../lib/utils";
+// import { formatCurrency } from "../../lib/utils";
 
 export const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -486,8 +486,8 @@ export const ProductDetailPage = () => {
           productId={id}
           type="similar"
           limit={10}
-          title="Customers Also Bought"
-          description="Frequently bought together - powered by AI collaborative filtering"
+          title="Customers may also like"
+          description="content base filtering"
         />
       </div>
     </div>
